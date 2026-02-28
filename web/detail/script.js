@@ -51,16 +51,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // simple data loader (would normally be async fetch)
     function loadBook() {
-        const params = new URLSearchParams(window.location.search);
-        const title = params.get('title') || 'Book Title';
-        const author = params.get('author') || 'Author Name';
-        const status = params.get('status') || 'Completed';
-        const views = params.get('views') || '12.3k';
-        const rating = params.get('rating') || '★★★★★';
-        const ratingCount = params.get('ratingCount') || '(1234 reviews)';
-        const description = params.get('desc') || '';
-        const cover = params.get('cover');
-        const chapters = parseInt(params.get('chapters')) || 200;
+        // First, try to get book data from localStorage (set by main page)
+        const storedBook = localStorage.getItem('currentBook');
+        
+        let title, author, status, views, rating, ratingCount, description, cover, chapters;
+        
+        if (storedBook) {
+            // Use data from localStorage
+            const book = JSON.parse(storedBook);
+            title = book.title || 'Book Title';
+            author = book.author || 'Author Name';
+            status = book.status || 'Completed';
+            views = book.views || '12.3k';
+            rating = '★★★★★';
+            ratingCount = '(NEW)';
+            description = book.description || '';
+            cover = book.image || '';
+            chapters = book.pages || 200;
+        } else {
+            // Fall back to URL query parameters
+            const params = new URLSearchParams(window.location.search);
+            title = params.get('title') || 'Book Title';
+            author = params.get('author') || 'Author Name';
+            status = params.get('status') || 'Completed';
+            views = params.get('views') || '12.3k';
+            rating = params.get('rating') || '★★★★★';
+            ratingCount = params.get('ratingCount') || '(1234 reviews)';
+            description = params.get('desc') || '';
+            cover = params.get('cover');
+            chapters = parseInt(params.get('chapters')) || 200;
+        }
 
         document.getElementById('book-title').textContent = title;
         document.getElementById('book-author').textContent = `by ${author}`;

@@ -57,7 +57,7 @@ function renderBooks(books) {
     }
     
     itemsGrid.innerHTML = books.map(book => `
-        <div class="item-card" data-category="${book.genre.toLowerCase()}" data-rating="5" data-year="${new Date().getFullYear()}">
+        <div class="item-card" data-category="${book.genre.toLowerCase()}" data-rating="5" data-year="${new Date().getFullYear()}" onclick="viewBookDetail(${book.id})">
             <div class="card-image">
                 <img src="${book.image || defaultImage}" alt="${book.title}">
             </div>
@@ -79,4 +79,19 @@ function renderBooks(books) {
             </div>
         </div>
     `).join('');
+}
+
+// Function to navigate to detail page with book data
+function viewBookDetail(bookId) {
+    const storedBooks = localStorage.getItem('adminBooks');
+    if (storedBooks) {
+        const books = JSON.parse(storedBooks);
+        const book = books.find(b => b.id === bookId);
+        if (book) {
+            // Store the book data in localStorage for the detail page
+            localStorage.setItem('currentBook', JSON.stringify(book));
+            // Navigate to detail page
+            window.location.href = '../detail/index(acc).html';
+        }
+    }
 }

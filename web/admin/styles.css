@@ -197,6 +197,13 @@ body {
     margin-bottom: 30px;
 }
 
+/* when only one section is visible make it full width and center */
+.dashboard-grid.single {
+    grid-template-columns: 1fr;
+    max-width: 900px;
+    margin: 0 auto 30px;
+}
+
 .dashboard-card {
     background: var(--white);
     border-radius: 15px;
@@ -664,6 +671,57 @@ body {
     border-radius: 10px;
     margin-bottom: 12px;
     transition: all 0.3s ease;
+}
+
+.user-group {
+    margin-bottom: 25px;
+}
+
+.user-group h4 {
+    margin-bottom: 12px;
+    font-size: 1.05rem;
+    color: var(--color-1);
+    border-bottom: 2px solid var(--color-3);
+    padding-bottom: 4px;
+}
+
+/* filter buttons above user list */
+.user-filter {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+}
+.user-filter button {
+    padding: 6px 12px;
+    border: 1px solid var(--color-3);
+    border-radius: 6px;
+    background: var(--white);
+    color: var(--color-1);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.user-filter button.active,
+.user-filter button:hover {
+    background: var(--color-3);
+    color: var(--color-4);
+}
+
+/* users listing should be three columns for the groups */
+#users-list {
+    display: grid;
+    /* always place groups in a single row, horizontal scroll if container too narrow */
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(300px, 1fr);
+    gap: 30px;
+    overflow-x: auto;
+    align-items: stretch; /* equal-height columns */
+    padding-bottom: 10px; /* allow scroll bar space */
+}
+
+.user-group {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* ensure each group fills its column */
 }
 
 .user-item:hover {
