@@ -37,12 +37,52 @@
 }
 
 /* chapter list scroll styling for better appearance */
+#chapter-container {
+    background: var(--bg); /* use page background instead of white */
+    /* height to show exactly 5 rows with 6 columns */
+    max-height: calc((2.25rem + 0.5rem) * 5);
+    overflow-y: auto;
+}
 #chapter-container::-webkit-scrollbar {
     width: 6px;
 }
 #chapter-container::-webkit-scrollbar-thumb {
     background: var(--secondary-color);
     border-radius: 3px;
+}
+
+/* chapter links grid layout */
+#chapter-list {
+    display: grid;
+    /* six columns for five rows (30 items per page) */
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#chapter-list li {
+    background: var(--white);
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+#chapter-list li:hover {
+    background: rgba(161, 194, 189, 0.2);
+}
+
+#chapter-list a {
+    display: block;
+    padding: 0.5rem;
+    color: var(--secondary-color);
+    text-decoration: none;
+    text-align: center;
+}
+
+#chapter-list a:hover,
+#chapter-list a:focus {
+    text-decoration: underline;
 }
 
 /* comment entries */

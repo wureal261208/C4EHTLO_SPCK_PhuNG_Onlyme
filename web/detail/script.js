@@ -76,9 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return chapters;
     }
 
-    // chapters pagination
+    // chapters pagination - five rows of six columns per page
     const totalChapters = loadBook();   // uses the returned number
-    const pageSize = 10;
+    const pageSize = 30; // six columns × five rows
     let currentPage = 0;
     const chapList = document.getElementById('chapter-list');
     const btnPrev = document.getElementById('chap-prev');
