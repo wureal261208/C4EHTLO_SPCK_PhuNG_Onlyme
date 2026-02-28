@@ -10,13 +10,19 @@ const API_OPTIONS = {
 };
 
 // Demo data - will be replaced with Firebase data
-let books = [
+// Load books from localStorage if available, otherwise use default data
+let books = JSON.parse(localStorage.getItem('adminBooks')) || [
     { id: 1, title: "The Name of the Wind", author: "Patrick Rothfuss", genre: "Fantasy", pages: 662, status: "published" },
     { id: 2, title: "The Wise Man's Fear", author: "Patrick Rothfuss", genre: "Fantasy", pages: 994, status: "published" },
     { id: 3, title: "The Slow Regard of Silent Things", author: "Patrick Rothfuss", genre: "Fantasy", pages: 176, status: "draft" },
     { id: 4, title: "A Court of Thorns and Roses", author: "Sarah J. Maas", genre: "Fantasy", pages: 419, status: "published" },
     { id: 5, title: "Atomic Habits", author: "James Clear", genre: "Self-Help", pages: 320, status: "draft" }
 ];
+
+// Function to save books to localStorage
+function saveBooksToStorage() {
+    localStorage.setItem('adminBooks', JSON.stringify(books));
+}
 
 let editors = [
     { id: 1, name: "John Smith", email: "john@example.com", status: "active", permissions: "manage" },
@@ -234,6 +240,7 @@ function addBook(event) {
     };
     
     books.push(newBook);
+    saveBooksToStorage();
     renderBooks();
     updateStatsCards();
     closeModal('book');
@@ -245,6 +252,7 @@ function toggleBookStatus(bookId) {
     const book = books.find(b => b.id === bookId);
     if (book) {
         book.status = book.status === 'published' ? 'draft' : 'published';
+        saveBooksToStorage();
         renderBooks();
         updateStatsCards();
         showNotification(`Book ${book.status === 'published' ? 'published' : 'unpublished'}!`, 'success');
@@ -254,6 +262,7 @@ function toggleBookStatus(bookId) {
 function removeBook(bookId) {
     if (confirm('Are you sure you want to remove this book?')) {
         books = books.filter(b => b.id !== bookId);
+        saveBooksToStorage();
         renderBooks();
         updateStatsCards();
         showNotification('Book removed successfully!', 'success');
@@ -287,6 +296,7 @@ async function fetchBooksFromAPI() {
             }
         });
         
+        saveBooksToStorage();
         renderBooks();
         updateStatsCards();
         showNotification('Added ' + addedCount + ' books from API!', 'success');

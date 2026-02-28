@@ -206,10 +206,16 @@ loginForm.btn.addEventListener("click", (e) => {
         return;
     }
 
-    // Save current user to localStorage
+// Save current user to localStorage
     localStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem('user', user.email);
+    localStorage.setItem('userRole', user.role);
 
-    // Redirect to main page
+    // Redirect based on role
     alert("Login successful! Welcome back!");
-    window.location.href = "../main/index(acc).html";
+    if (user.role === 'admin') {
+        window.location.href = "../admin/index(admin).html";
+    } else {
+        window.location.href = "../main/index(acc).html";
+    }
 });

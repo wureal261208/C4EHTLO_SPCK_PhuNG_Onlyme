@@ -630,20 +630,122 @@ body {
 
 /* Scrollbar */
 .books-list::-webkit-scrollbar,
-.editors-list::-webkit-scrollbar {
+.editors-list::-webkit-scrollbar,
+.users-list::-webkit-scrollbar {
     width: 6px;
 }
 
 .books-list::-webkit-scrollbar-track,
-.editors-list::-webkit-scrollbar-track {
+.editors-list::-webkit-scrollbar-track,
+.users-list::-webkit-scrollbar-track {
     background: rgba(161, 194, 189, 0.1);
     border-radius: 3px;
 }
 
 .books-list::-webkit-scrollbar-thumb,
-.editors-list::-webkit-scrollbar-thumb {
+.editors-list::-webkit-scrollbar-thumb,
+.users-list::-webkit-scrollbar-thumb {
     background: var(--color-3);
     border-radius: 3px;
+}
+
+/* Users List */
+.users-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(161, 194, 189, 0.08);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.user-item:hover {
+    background: rgba(161, 194, 189, 0.15);
+    transform: translateX(5px);
+}
+
+.user-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-3);
+}
+
+.user-item .user-info {
+    flex: 1;
+}
+
+.user-item .user-name {
+    font-weight: 600;
+    color: var(--color-1);
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.user-item .user-email {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.user-item .user-role-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.user-item .user-role-badge.admin {
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+}
+
+.user-item .user-role-badge.editor {
+    background: rgba(155, 89, 182, 0.2);
+    color: #9b59b6;
+}
+
+.user-item .user-role-badge.user {
+    background: rgba(46, 204, 113, 0.2);
+    color: #27ae60;
+}
+
+.user-item .user-password-hidden {
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+}
+
+.user-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.user-actions button {
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-actions .btn-remove {
+    background: #ff6b6b;
+    color: var(--white);
+}
+
+.user-actions .btn-remove:hover {
+    background: #e74c3c;
 }
 
 /* Responsive */

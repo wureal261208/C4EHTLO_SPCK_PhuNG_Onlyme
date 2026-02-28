@@ -32,9 +32,13 @@
                 <i class='bx bx-group'></i>
                 <span>Editors</span>
             </a>
-            <a href="#" class="admin-nav-item" onclick="navigateTo('stats')">
+<a href="#" class="admin-nav-item" onclick="navigateTo('stats')">
                 <i class='bx bx-bar-chart-alt-2'></i>
                 <span>Statistics</span>
+            </a>
+            <a href="#" class="admin-nav-item" onclick="navigateTo('users')">
+                <i class='bx bx-user'></i>
+                <span>Users</span>
             </a>
             <a href="#" class="admin-nav-item" onclick="navigateTo('settings')">
                 <i class='bx bx-cog'></i>
@@ -89,7 +93,7 @@
             </div>
         </section>
 
-        <section class="dashboard-grid">
+<section class="dashboard-grid">
             <div class="dashboard-card" id="books-column">
                 <h3><i class='bx bx-book'></i> Books Management</h3>
                 <button class="add-btn" onclick="openModal('book')">
@@ -105,6 +109,12 @@
                     <i class='bx bx-user-plus'></i> Invite Editor
                 </button>
                 <div class="editors-list" id="editors-list">
+                </div>
+            </div>
+
+            <div class="dashboard-card" id="users-column" style="display: none;">
+                <h3><i class='bx bx-user'></i> Users Management</h3>
+                <div class="users-list" id="users-list">
                 </div>
             </div>
 
