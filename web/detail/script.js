@@ -56,6 +56,19 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let title, author, status, views, rating, ratingCount, description, cover, chapters;
         
+        function isValidUrl(url) {
+            try {
+                new URL(url);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        // give priority to any cover provided via query string
+        const params = new URLSearchParams(window.location.search);
+        const overrideCover = params.get('cover');
+
         if (storedBook) {
             // Use data from localStorage
             const book = JSON.parse(storedBook);
@@ -66,8 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
             rating = '★★★★★';
             ratingCount = '(NEW)';
             description = book.description || '';
-            cover = book.image || '';
             chapters = book.pages || 200;
+            if (overrideCover && isValidUrl(overrideCover)) {
+                cover = overrideCover;
+            } else if (book.image) {
+                if (isValidUrl(book.image)) {
+                    cover = book.image;
+                } else {
+                    console.warn('Stored cover URL is invalid, falling back to default:', book.image);
+                    cover = '';
+                }
+            } else {
+                cover = '';
+            }
         } else {
             // Fall back to URL query parameters
             const params = new URLSearchParams(window.location.search);
@@ -78,7 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
             rating = params.get('rating') || '★★★★★';
             ratingCount = params.get('ratingCount') || '(1234 reviews)';
             description = params.get('desc') || '';
-            cover = params.get('cover');
+            // if we reach here without localStorage data use query params (including cover override)
+            cover = overrideCover || params.get('cover');
             chapters = parseInt(params.get('chapters')) || 200;
         }
 
@@ -90,9 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('book-rating-count').textContent = ratingCount;
         document.getElementById('book-description').textContent = description ||
             'No summary provided.';
-        if (cover) {
-            document.getElementById('book-cover').src = cover;
-        }
+        // Set book cover image - use book image or fallback to default
+        const defaultCover = "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80";
+        document.getElementById('book-cover').src = cover || defaultCover;
         return chapters;
     }
 

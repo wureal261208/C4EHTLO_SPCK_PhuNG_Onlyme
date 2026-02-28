@@ -42,6 +42,7 @@ body {
     display: flex;
     flex-direction: column;
     z-index: 100;
+    transition: left 0.3s ease;
 }
 
 .admin-logo {
@@ -58,16 +59,19 @@ body {
     height: 40px;
     border-radius: 8px;
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 .admin-logo span {
     color: var(--color-4);
     font-size: 1.3rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .admin-nav {
     flex: 1;
+    overflow-y: auto;
 }
 
 .admin-nav-item {
@@ -81,6 +85,7 @@ body {
     margin-bottom: 8px;
     transition: all 0.3s ease;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .admin-nav-item:hover {
@@ -96,6 +101,7 @@ body {
 
 .admin-nav-item i {
     font-size: 1.3rem;
+    flex-shrink: 0;
 }
 
 .admin-user-info {
@@ -104,24 +110,33 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 .admin-user-info img {
-    width: 45px;
-    height: 45px;
+    /* make avatar flexible - cap size but allow scaling down */
+    width: auto;
+    height: auto;
+    max-width: 45px;
+    max-height: 45px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-3);
+    flex-shrink: 0;
 }
 
 .admin-user-info .user-details {
     flex: 1;
+    min-width: 0;
 }
 
 .admin-user-info .user-name {
     color: var(--color-4);
     font-weight: 500;
     font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .admin-user-info .user-role {
@@ -129,15 +144,20 @@ body {
     font-size: 0.8rem;
 }
 
-.admin-logout {
+.admin-logout, .admin-home {
     color: #ff6b6b;
-    margin-left: auto;
     font-size: 1.2rem;
     cursor: pointer;
     transition: transform 0.2s;
+    flex-shrink: 0;
 }
 
-.admin-logout:hover {
+.admin-home {
+    color: var(--color-4);
+    margin-right: 5px;
+}
+
+.admin-logout:hover, .admin-home:hover {
     transform: scale(1.1);
 }
 
@@ -146,6 +166,7 @@ body {
     margin-left: 260px;
     padding: 30px;
     min-height: 100vh;
+    transition: margin-left 0.3s ease;
 }
 
 .admin-header {
@@ -153,6 +174,8 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .admin-header h1 {
@@ -167,6 +190,7 @@ body {
     border-radius: 25px;
     padding: 4px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex-shrink: 0;
 }
 
 .role-toggle button {
@@ -178,6 +202,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .role-toggle button.active {
@@ -197,7 +222,6 @@ body {
     margin-bottom: 30px;
 }
 
-/* when only one section is visible make it full width and center */
 .dashboard-grid.single {
     grid-template-columns: 1fr;
     max-width: 900px;
@@ -221,6 +245,7 @@ body {
     margin-bottom: 20px;
     padding-bottom: 12px;
     border-bottom: 2px solid var(--color-3);
+    flex-wrap: wrap;
 }
 
 .dashboard-card h3 i {
@@ -277,6 +302,7 @@ body {
     border-radius: 10px;
     margin-bottom: 12px;
     transition: all 0.3s ease;
+    flex-wrap: wrap;
 }
 
 .book-item:hover {
@@ -290,10 +316,12 @@ body {
     object-fit: cover;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex-shrink: 0;
 }
 
 .book-item .book-info {
     flex: 1;
+    min-width: 120px;
 }
 
 .book-item .book-title {
@@ -301,11 +329,17 @@ body {
     color: var(--color-1);
     font-size: 0.95rem;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .book-item .book-author {
     color: var(--muted);
     font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .book-item .book-status {
@@ -313,6 +347,7 @@ body {
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 500;
+    flex-shrink: 0;
 }
 
 .book-item .book-status.published {
@@ -328,6 +363,7 @@ body {
 .book-actions {
     display: flex;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 .book-actions button {
@@ -375,6 +411,7 @@ body {
     border-radius: 10px;
     margin-bottom: 12px;
     transition: all 0.3s ease;
+    flex-wrap: wrap;
 }
 
 .editor-item:hover {
@@ -388,10 +425,12 @@ body {
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-3);
+    flex-shrink: 0;
 }
 
 .editor-item .editor-info {
     flex: 1;
+    min-width: 120px;
 }
 
 .editor-item .editor-name {
@@ -399,11 +438,17 @@ body {
     color: var(--color-1);
     font-size: 0.95rem;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .editor-item .editor-email {
     color: var(--muted);
     font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .editor-item .editor-status {
@@ -411,6 +456,7 @@ body {
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 500;
+    flex-shrink: 0;
 }
 
 .editor-item .editor-status.active {
@@ -426,6 +472,7 @@ body {
 .editor-actions {
     display: flex;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 .editor-actions button {
@@ -473,6 +520,7 @@ body {
     gap: 8px;
     transition: all 0.3s ease;
     margin-bottom: 15px;
+    flex-wrap: wrap;
 }
 
 .add-btn:hover {
@@ -495,6 +543,7 @@ body {
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
+    padding: 20px;
 }
 
 .modal-overlay.active {
@@ -506,10 +555,12 @@ body {
     background: var(--white);
     border-radius: 15px;
     padding: 30px;
-    width: 90%;
+    width: 100%;
     max-width: 500px;
     transform: scale(0.8);
     transition: all 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-overlay.active .modal {
@@ -522,6 +573,8 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
+    font-size: 1.3rem;
 }
 
 .modal h2 i {
@@ -541,6 +594,7 @@ body {
     border-radius: 8px;
     font-size: 0.95rem;
     transition: border-color 0.3s;
+    width: 100%;
 }
 
 .modal-form input:focus,
@@ -553,10 +607,12 @@ body {
     display: flex;
     gap: 12px;
     margin-top: 10px;
+    flex-wrap: wrap;
 }
 
 .modal-buttons button {
     flex: 1;
+    min-width: 120px;
     padding: 12px;
     border: none;
     border-radius: 8px;
@@ -599,6 +655,8 @@ body {
     background: rgba(161, 194, 189, 0.1);
     border-radius: 10px;
     border-left: 4px solid var(--color-3);
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .stats-item .stats-info h4 {
@@ -671,6 +729,7 @@ body {
     border-radius: 10px;
     margin-bottom: 12px;
     transition: all 0.3s ease;
+    flex-wrap: wrap;
 }
 
 .user-group {
@@ -690,7 +749,9 @@ body {
     margin: 15px 0;
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
 }
+
 .user-filter button {
     padding: 6px 12px;
     border: 1px solid var(--color-3);
@@ -700,6 +761,7 @@ body {
     cursor: pointer;
     transition: background 0.2s;
 }
+
 .user-filter button.active,
 .user-filter button:hover {
     background: var(--color-3);
@@ -709,19 +771,19 @@ body {
 /* users listing should be three columns for the groups */
 #users-list {
     display: grid;
-    /* always place groups in a single row, horizontal scroll if container too narrow */
     grid-auto-flow: column;
-    grid-auto-columns: minmax(300px, 1fr);
-    gap: 30px;
+    grid-auto-columns: minmax(280px, 1fr);
+    gap: 20px;
     overflow-x: auto;
-    align-items: stretch; /* equal-height columns */
-    padding-bottom: 10px; /* allow scroll bar space */
+    align-items: stretch;
+    padding-bottom: 10px;
 }
 
 .user-group {
     display: flex;
     flex-direction: column;
-    height: 100%; /* ensure each group fills its column */
+    height: 100%;
+    min-width: 280px;
 }
 
 .user-item:hover {
@@ -730,15 +792,17 @@ body {
 }
 
 .user-item img {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-3);
+    flex-shrink: 0;
 }
 
 .user-item .user-info {
     flex: 1;
+    min-width: 100px;
 }
 
 .user-item .user-name {
@@ -746,11 +810,17 @@ body {
     color: var(--color-1);
     font-size: 0.95rem;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-item .user-email {
     color: var(--muted);
     font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-item .user-role-badge {
@@ -758,6 +828,7 @@ body {
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 500;
+    flex-shrink: 0;
 }
 
 .user-item .user-role-badge.admin {
@@ -784,6 +855,7 @@ body {
 .user-actions {
     display: flex;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 .user-actions button {
@@ -806,8 +878,43 @@ body {
     background: #e74c3c;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
+/* Sidebar Toggle Button - visible on mobile */
+.sidebar-toggle {
+    display: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: var(--color-1);
+    padding: 8px;
+    border-radius: 8px;
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+.sidebar-toggle:hover {
+    background: var(--color-4);
+}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+/* ===================== RESPONSIVE BREAKPOINTS ===================== */
+
+/* Large desktops */
+@media (max-width: 1400px) {
     .dashboard-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -817,7 +924,23 @@ body {
     }
 }
 
-@media (max-width: 768px) {
+/* Tablets landscape and small desktops */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    #users-list {
+        grid-auto-columns: minmax(250px, 1fr);
+    }
+}
+
+/* Tablets portrait */
+@media (max-width: 992px) {
     .admin-sidebar {
         width: 70px;
         padding: 15px 10px;
@@ -839,11 +962,326 @@ body {
     }
     
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
     
     .admin-header {
-        flex-direction: column;
+        flex-direction: row;
+    }
+    
+    .admin-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    #users-list {
+        grid-template-columns: 1fr;
+        grid-auto-flow: row;
+    }
+    
+    .user-group {
+        min-width: 100%;
+    }
+    
+    .sidebar-toggle {
+        display: block;
+    }
+    
+    /* ensure avatar stays centered already at ~920px */
+    .admin-user-info img {
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 40px;
+        max-height: 40px;
+    }
+}
+
+/* Mobile landscape */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        left: -260px;
+        width: 260px;
+        padding: 20px;
+    }
+    
+    .admin-sidebar.open {
+        left: 0;
+    }
+    
+    .admin-sidebar.open + .sidebar-overlay {
+        display: block;
+    }
+    
+    .admin-logo span,
+    .admin-nav-item span,
+    .admin-user-info .user-details {
+        display: block;
+    }
+    
+    .admin-main {
+        margin-left: 0;
+        padding: 15px;
+    }
+    
+    /* center the user info row and avatar */
+    .admin-user-info {
+        justify-content: center; /* ensure row items are centered */
+    }
+    .admin-user-info img{
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 35px;
+        max-height: 35px;
+    }
+    .admin-user-info .admin-home,
+    .admin-user-info .admin-logout {
+        margin-left: 0;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
         gap: 15px;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-card i {
+        font-size: 2rem;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .stat-card .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    .dashboard-card {
+        padding: 15px;
+    }
+    
+    .book-item {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .book-item img {
+        width: 40px;
+        height: 55px;
+    }
+    
+    .book-item .book-info {
+        min-width: 100px;
+    }
+    
+    .book-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+    
+    .modal {
+        padding: 20px;
+        max-height: 85vh;
+    }
+    
+    .modal-form {
+        gap: 12px;
+    }
+    
+    .modal-form input,
+    .modal-form select {
+        padding: 10px 12px;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+    }
+    
+    .modal-buttons button {
+        width: 100%;
+    }
+    
+    .admin-header {
+        flex-wrap: wrap;
+    }
+    
+    .admin-header h1 {
+        font-size: 1.3rem;
+        order: 2;
+        width: 100%;
+    }
+    
+    .sidebar-toggle {
+        order: 1;
+    }
+    
+    .admin-header .role-toggle {
+        order: 3;
+    }
+    
+    .role-toggle button {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile portrait */
+@media (max-width: 480px) {
+    .admin-main {
+        padding: 10px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .stat-card {
+        padding: 15px 10px;
+    }
+    
+    .stat-card i {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 1.3rem;
+    }
+    
+    .stat-card .stat-label {
+        font-size: 0.7rem;
+    }
+    
+    .dashboard-grid {
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .dashboard-card h3 {
+        font-size: 1rem;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+    }
+    
+    .add-btn {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .book-item {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .book-item img {
+        width: 35px;
+        height: 50px;
+    }
+    
+    .book-item .book-title {
+        font-size: 0.85rem;
+    }
+    
+    .book-item .book-author {
+        font-size: 0.75rem;
+    }
+    
+    .book-item .book-status {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+    }
+    
+    .book-actions button {
+        padding: 6px;
+    }
+    
+    .user-item {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .user-item img {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .user-item .user-name {
+        font-size: 0.85rem;
+    }
+    
+    .user-item .user-email {
+        font-size: 0.75rem;
+    }
+    
+    .user-item .user-role-badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+    }
+    
+    .user-filter {
+        gap: 5px;
+    }
+    
+    .user-filter button {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .modal {
+        padding: 15px;
+        margin: 10px;
+        max-height: 90vh;
+    }
+    
+    .modal h2 {
+        font-size: 1.1rem;
+    }
+    
+    .stats-item {
+        padding: 12px;
+    }
+    
+    .stats-item .stats-value {
+        font-size: 1.2rem;
+    }
+    
+    .admin-user-info {
+        padding: 10px;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .admin-user-info img {
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 35px;
+        height: 35px;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+    .admin-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .role-toggle button {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .book-item .book-info {
+        min-width: 80px;
+    }
+    
+    .book-item .book-author {
+        display: none;
     }
 }

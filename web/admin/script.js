@@ -122,6 +122,8 @@ function showLoginPrompt() {
         // Save to localStorage
         localStorage.setItem('user', authResult.user);
         localStorage.setItem('userRole', authResult.role);
+        // Mark as first login to ensure dashboard is shown
+        localStorage.setItem('firstLogin', 'true');
         showNotification('Login successful! Welcome ' + username.split('@')[0], 'success');
         return authResult;
     } else {
@@ -162,7 +164,6 @@ function loadData() {
     renderStats();
     renderUsers();
     updateStatsCards();
-    initUserFilter();
 }
 
 // ═════════════════════════════════════════════════════════════
@@ -174,6 +175,23 @@ function switchRole(role) {
     updateRoleToggle();
     loadData();
 }
+
+// responsive sidebar toggle for mobile
+function toggleSidebar() {
+    const sidebar = document.querySelector('.admin-sidebar');
+    sidebar.classList.toggle('open');
+}
+
+// close sidebar when clicking outside on small screens
+document.addEventListener('click', (e) => {
+    const sidebar = document.querySelector('.admin-sidebar');
+    const toggle = document.querySelector('.sidebar-toggle');
+    if (sidebar && sidebar.classList.contains('open')) {
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+            sidebar.classList.remove('open');
+        }
+    }
+});
 
 function updateRoleToggle() {
     const adminBtn = document.getElementById('btn-admin');
@@ -475,7 +493,6 @@ function getUsers() {
     return JSON.parse(localStorage.getItem('users')) || [];
 }
 
-let userFilter = 'all';
 
 function renderUsers() {
     const container = document.getElementById('users-list');
@@ -493,14 +510,14 @@ function renderUsers() {
         return;
     }
 
-    // group users by role
+    // filter out admins and group remaining users by role
+    const filtered = users.filter(u => u.role !== 'admin');
     const groups = {
-        admin: [],
         editor: [],
         user: []
     };
-    users.forEach(u => {
-        if (groups[u.role]) groups[u.role].push(u);
+    filtered.forEach(u => {
+        if (u.role === 'editor') groups.editor.push(u);
         else groups.user.push(u);
     });
 
@@ -532,37 +549,14 @@ function renderUsers() {
         `;
     }
 
-    html += renderGroup('Administrators', groups.admin);
+    // only show editors and regular users, drop any admins
     html += renderGroup('Editors', groups.editor);
     html += renderGroup('Users', groups.user);
 
     container.innerHTML = html;
-    applyFilter();
 }
 
-function applyFilter() {
-    document.querySelectorAll('#users-list .user-group').forEach(group => {
-        const role = group.getAttribute('data-role');
-        if (userFilter === 'all' || userFilter === role) {
-            group.style.display = '';
-        } else {
-            group.style.display = 'none';
-        }
-    });
-}
 
-// attach filter button handlers
-function initUserFilter() {
-    const buttons = document.querySelectorAll('#user-filter button');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            buttons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            userFilter = btn.dataset.role;
-            applyFilter();
-        });
-    });
-}
 
 function removeUser(email) {
     if (confirm(`Are you sure you want to remove user: ${email}?`)) {
@@ -630,11 +624,24 @@ function getTopGenre() {
 // ═════════════════════════════════════════════════════════════
 
 function navigateTo(section) {
+    // Remove active class from all nav items
     document.querySelectorAll('.admin-nav-item').forEach(item => {
         item.classList.remove('active');
     });
     
-    event.target.closest('.admin-nav-item').classList.add('active');
+    // Add active class to the clicked nav item (if event is available)
+    if (event && event.target) {
+        const clickedItem = event.target.closest('.admin-nav-item');
+        if (clickedItem) {
+            clickedItem.classList.add('active');
+        }
+    } else if (section) {
+        // If called programmatically, find the nav item that matches the section
+        const navItem = document.querySelector(`.admin-nav-item[onclick*="${section}"]`);
+        if (navItem) {
+            navItem.classList.add('active');
+        }
+    }
     
     const booksCol = document.getElementById('books-column');
     const editorsCol = document.getElementById('editors-column');
@@ -658,8 +665,8 @@ function navigateTo(section) {
     } else if (section === 'stats') {
         showOnly(statsCol);
     } else {
-        // overview / default
-        showOnly(booksCol, editorsCol, usersCol, statsCol);
+        // overview / default: show everything except accounts
+        showOnly(booksCol, editorsCol, statsCol);
     }
 
     // adjust layout width when single card visible
@@ -678,6 +685,8 @@ function logout() {
     if (confirm('Are you sure you want to logout?')) {
         localStorage.removeItem('user');
         localStorage.removeItem('userRole');
+        // Clear first login flag so next login is treated as first time
+        localStorage.removeItem('firstLogin');
         window.location.href = '../log&register/index.html';
     }
 }

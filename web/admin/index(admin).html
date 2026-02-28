@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <aside class="admin-sidebar">
         <div class="admin-logo">
             <img src="/img/logo.jpg" alt="BookWorm">
@@ -37,8 +38,8 @@
                 <span>Statistics</span>
             </a>
             <a href="#" class="admin-nav-item" onclick="navigateTo('users')">
-                <i class='bx bx-user'></i>
-                <span>Users</span>
+                <i class='bx bx-user-circle'></i>
+                <span>Accounts</span>
             </a>
         </nav>
 
@@ -48,13 +49,15 @@
                 <div class="user-name" id="user-name">Admin User</div>
                 <div class="user-role" id="user-role">Administrator</div>
             </div>
-            <i class='bx bx-home admin-home' title="Back to Home" onclick="goToHome()" style="margin-right: 10px; cursor: pointer;"></i>
+            <!-- home link removed as requested -->
             <i class='bx bx-log-out admin-logout' title="Logout" onclick="logout()"></i>
         </div>
     </aside>
 
     <main class="admin-main">
         <header class="admin-header">
+            <!-- hamburger visible on smaller screens to toggle sidebar -->
+            <i class='bx bx-menu sidebar-toggle' onclick="toggleSidebar()" title="Menu"></i>
             <h1><i class='bx bx-dashboard'></i> Admin Dashboard</h1>
             <div class="role-toggle">
                 <button id="btn-admin" class="active" onclick="switchRole('admin')">
@@ -108,15 +111,9 @@
                 </div>
             </div>
 
-            <div class="dashboard-card" id="users-column" style="display:none">
-                <h3><i class='bx bx-user-circle'></i> Users Management</h3>
-                <div id="user-filter" class="user-filter">
-                    <button data-role="all" class="active">All</button>
-                    <button data-role="admin">Admins</button>
-                    <button data-role="editor">Editors</button>
-                    <button data-role="user">Users</button>
-                </div>
-                <div class="users-list" id="users-list">
+            <div class="dashboard-card" id="users-column" style="display: none;">
+                <h3><i class='bx bx-user-circle'></i> Accounts Management</h3>
+                    <div class="users-list" id="users-list">
                 </div>
             </div>
 

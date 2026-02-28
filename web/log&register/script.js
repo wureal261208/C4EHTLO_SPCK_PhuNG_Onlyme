@@ -3,11 +3,6 @@ function initUsersDB() {
     if (!localStorage.getItem('users')) {
         const defaultUsers = [
             {
-                email: 'admin@admin.com',
-                password: 'admin123',
-                role: 'admin'
-            },
-            {
                 email: 'admin@bookworm.com',
                 password: 'Admin123',
                 role: 'admin'
