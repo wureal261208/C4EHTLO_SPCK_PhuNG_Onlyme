@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Boxicons CDN -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* Palette from https://colorhunt.co/palette/19183b708993a1c2bde7f2ef */
+            --color-1: #19183B;
+            /* dark */
+            --color-2: #708993;
+            /* muted teal */
+            --color-3: #A1C2BD;
+            /* pale teal */
+            --color-4: #E7F2EF;
+            /* very light background */
+
+            --bg: var(--color-4);
+            --text: var(--color-1);
+            --muted: var(--color-2);
+            --accent: var(--color-3);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Borel&family=Delius&family=Playwrite+NZ+Basic:wght@100..400&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Playwrite New Zealand Basic', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Navbar customization to use the palette */
+        .custom-navbar {
+            background: linear-gradient(90deg, var(--color-1) 0%, rgba(112, 137, 147, 0.15) 100%) !important;
+            border-bottom: 2px solid var(--color-2);
+            box-shadow: 0 2px 8px rgba(25, 24, 59, 0.1);
+        }
+
+        .custom-navbar a,
+        .custom-navbar .text-sm,
+        .custom-navbar button {
+            color: var(--color-4);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            padding: .5rem .75rem;
+            border-radius: .375rem;
+            color: var(--color-3);
+            background: transparent;
+            text-decoration: none;
+        }
+
+        .nav-link.active {
+            color: var(--color-4);
+            background: rgba(112, 137, 147, 0.12);
+        }
+
+        .getStarted {
+            color: var(--color-4);
+            background: rgba(112, 137, 147, 0.12);
+        }
+
+        .custom-input {
+            width: 16rem;
+            padding-left: 2.5rem;
+            padding-right: 1rem;
+            padding-top: .5rem;
+            padding-bottom: .5rem;
+            background: rgba(25, 24, 59, 0.12);
+            border: 1px solid rgba(25, 24, 59, 0.18);
+            border-radius: .5rem;
+            color: var(--color-1);
+        }
+
+        .custom-input::placeholder {
+            color: rgba(25, 24, 59, 0.5);
+        }
+
+        .custom-avatar img {
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .mobile-menu {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .mobile-menu.hidden {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        .item-card {
+            background: linear-gradient(135deg, rgba(232, 237, 237, 0.8), rgba(231, 242, 239, 0.6)) !important;
+            border: 1px solid var(--color-3) !important;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: scale(1.05) translateY(-8px);
+            box-shadow: 0 16px 32px rgba(112, 137, 147, 0.25) !important;
+            background: linear-gradient(135deg, rgba(161, 194, 189, 0.3), rgba(161, 194, 189, 0.2)) !important;
+        }
+
+        .item-card h3 {
+            color: var(--color-1);
+        }
+
+        .item-card p {
+            color: var(--color-2);
+        }
+
+        .item-card {
+            background: linear-gradient(135deg, rgba(232, 237, 237, 0.8), rgba(231, 242, 239, 0.6)) !important;
+            border: 1px solid var(--color-3) !important;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: scale(1.05) translateY(-8px);
+            box-shadow: 0 16px 32px rgba(112, 137, 147, 0.25) !important;
+            background: linear-gradient(135deg, rgba(161, 194, 189, 0.3), rgba(161, 194, 189, 0.2)) !important;
+        }
+
+        .item-card h3 {
+            color: var(--color-1);
+        }
+
+        .item-card p {
+            color: var(--color-2);
+        }
+
+        .book-hero {
+            background: linear-gradient(135deg, rgba(161, 194, 189, 0.18), rgba(231, 242, 239, 0.35));
+            border-bottom: 1px solid var(--accent);
+        }
+
+        .book-cover {
+            box-shadow: 0 25px 50px -12px rgba(25, 24, 59, 0.35),
+                0 10px 20px -8px rgba(112, 137, 147, 0.25);
+            transition: transform 0.4s ease;
+        }
+
+        .book-cover:hover {
+            transform: scale(1.04) rotate(1.5deg);
+        }
+
+        .rating-star {
+            color: #facc15;
+        }
+
+        .chip {
+            background: rgba(112, 137, 147, 0.1);
+            color: var(--muted);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--color-2), var(--accent));
+            color: var(--color-4);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .related-card {
+            background: linear-gradient(135deg, rgba(232, 237, 237, 0.7), rgba(231, 242, 239, 0.5));
+            border: 1px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .related-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(112, 137, 147, 0.2);
+        }
+
+        .comment-thread {
+            border-left: 3px solid var(--accent);
+            padding-left: 1.25rem;
+            margin-left: 1rem;
+        }
+
+        .spoiler {
+            background: rgba(112, 137, 147, 0.08);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .spoiler.revealed {
+            background: rgba(161, 194, 189, 0.18);
+            color: var(--text);
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--text);
+            border-bottom-color: var(--accent);
+        }
+
+        .comment-box {
+            background: rgba(25, 24, 59, 0.05);
+            border: 1px solid var(--accent);
+        }
+
+        .comment-card {
+            background: linear-gradient(135deg, rgba(231, 242, 239, 0.6), rgba(232, 237, 237, 0.4));
+            border: 1px solid var(--accent);
+            transition: all 0.2s;
+        }
+
+        .comment-card:hover {
+            box-shadow: 0 8px 20px rgba(112, 137, 147, 0.15);
+        }
+
+        .audio-btn {
+            background: linear-gradient(90deg, var(--color-2), var(--accent));
+            color: var(--color-4);
+        }
+
+        .audio-btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .track-time {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 custom-navbar border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+
+                <!-- Left: Logo + Menu items -->
+                <div class="flex items-center">
+                    <!-- Logo / Brand icon -->
+                    <div class="flex-shrink-0">
+                        <a href="#" class="text-2xl font-bold flex items-center gap-2">
+                            <!-- <span class="text-3xl">∞</span> Thay bằng icon của bạn, ví dụ Heroicon hoặc SVG -->
+                            <!-- hoặc dùng SVG logo thật -->
+                            <img class="h-8 w-auto" src="/img/logo.jpg" alt="Your App">
+                            <span>BookWorm</span>
+                        </a>
+                    </div>
+
+                    <!-- Menu items - ẩn trên mobile, hiện trên desktop -->
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-4 nav-links">
+                            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link active">
+                                Trending
+                            </a>
+                            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link">
+                                Categories
+                            </a>
+                            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link">
+                                Contact
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Search + Notification + Avatar -->
+                <div class="flex items-center gap-4">
+
+                    <!-- Search -->
+                    <div class="relative hidden sm:block">
+                        <input type="text" placeholder="Search..." class="custom-input text-sm background-gray-700
+                            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <!-- Notification bell with dropdown -->
+                    <div class="relative">
+                        <button id="notification-btn"
+                            class="p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 relative">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            <!-- Badge (shows when there are new items) -->
+                            <span id="notification-badge"
+                                class="absolute top-0 right-0 flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-white text-xs font-bold ring-2 ring-gray-900 hidden">
+                                3
+                            </span>
+                        </button>
+
+                        <!-- Dropdown panel for new books/updates -->
+                        <div id="notification-dropdown"
+                            class="absolute right-0 mt-2 w-80 sm:w-96 bg-[var(--color-4)] rounded-xl shadow-2xl border border-[var(--accent)] overflow-hidden hidden z-50 origin-top-right">
+
+                            <!-- Header -->
+                            <div
+                                class="p-4 border-b border-[var(--accent)]/30 bg-gradient-to-r from-[var(--color-1)] to-[var(--color-2)] text-[var(--color-4)]">
+                                <h3 class="font-medium text-lg">New Books & Updates</h3>
+                                <p class="text-sm opacity-90">Fresh arrivals and recommendations just for you</p>
+                            </div>
+
+                            <!-- Scrollable content area -->
+                            <div class="max-h-96 overflow-y-auto">
+                                <!-- Example new book items -->
+                                <a href="#"
+                                    class="block p-4 hover:bg-[rgba(112,137,147,0.1)] transition border-b border-[var(--accent)]/20 last:border-b-0">
+                                    <div class="flex items-start gap-4">
+                                        <img src="https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80"
+                                            alt="New Book Cover" class="w-12 h-16 object-cover rounded shadow">
+                                        <div>
+                                            <h4 class="font-medium text-[var(--text)]">The Thrice-Bound Fool</h4>
+                                            <p class="text-sm text-[var(--muted)]"
+                                                style="color:var(--color-1); background:transparent">Christopher
+                                                Buehlman • New Release
+                                                2026</p>
+                                            <p class="text-xs text-[var(--accent)] mt-1">Dark fantasy • Grimdark epic
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="#"
+                                    class="block p-4 hover:bg-[rgba(112,137,147,0.1)] transition border-b border-[var(--accent)]/20">
+                                    <div class="flex items-start gap-4">
+                                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d4679?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80"
+                                            alt="New Book Cover" class="w-12 h-16 object-cover rounded shadow">
+                                        <div>
+                                            <h4 class="font-medium text-[var(--text)]">Platform Decay (Murderbot #8)
+                                            </h4>
+                                            <p class="text-sm text-[var(--muted)]"
+                                                style="color:var(--color-1); background:transparent">Martha Wells •
+                                                Coming Soon</p>
+                                            <p class="text-xs text-[var(--accent)] mt-1">Sci-Fi • Sequel everyone is
+                                                waiting for</p>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="block p-4 hover:bg-[rgba(112,137,147,0.1)] transition">
+                                    <div class="flex items-start gap-4">
+                                        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80"
+                                            alt="New Book Cover" class="w-12 h-16 object-cover rounded shadow">
+                                        <div>
+                                            <h4 class="font-medium text-[var(--text)]">Green and Deadly Things</h4>
+                                            <p class="text-sm text-[var(--muted)]"
+                                                style="color:var(--color-1); background:transparent">Jenn Lyons • New
+                                                2026 Fantasy</p>
+                                            <p class="text-xs text-[var(--accent)] mt-1">Epic fantasy with deadly magic
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Footer actions -->
+                            <div class="p-4 border-t border-[var(--accent)]/30 bg-[rgba(25,24,59,0.05)] text-center">
+                                <a href="#" class="text-[var(--accent)] hover:underline font-medium"
+                                    style="color:var(--color-2); background:transparent">
+                                    View All New Releases →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Avatar / Profile -->
+                    <div class="relative">
+                        <button class="flex items-center gap-2 focus:outline-none user-dropdown-btn"
+                            style="cursor:pointer">
+                            <img class="h-9 w-9 rounded-full object-cover border-2 custom-avatar"
+                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                alt="User avatar">
+                            <!-- Dropdown menu -->
+                            <div class="absolute top-12 left-0 w-56 rounded-lg shadow-xl py-1 z-50 hidden dropdown-menu origin-top-right"
+                                style="background:linear-gradient(135deg,var(--color-4),rgba(231,242,239,0.8)); border:2px solid var(--color-3); min-width:240px">
+
+                                <!-- User info -->
+                                <div class="px-4 py-3" style="border-bottom:1px solid var(--color-3)">
+                                    <p class="text-sm font-medium" style="color:var(--color-1)">Alex Nguyen</p>
+                                    <p class="text-xs truncate" style="color:var(--color-2)">alexnguyen@example.com</p>
+                                </div>
+
+                                <!-- Menu items -->
+                                <a href="#" class="block px-4 py-2.5 text-sm transition-colors"
+                                    style="color:var(--color-1); background:transparent">
+                                    Profile
+                                </a>
+                                <a href="#" class="block px-4 py-2.5 text-sm transition-colors"
+                                    style="color:var(--color-1); background:transparent">
+                                    My Books / Reading List
+                                </a>
+                                <a href="#" class="block px-4 py-2.5 text-sm transition-colors"
+                                    style="color:var(--color-1); background:transparent">
+                                    Settings
+                                </a>
+                                <a href="#" class="block px-4 py-2.5 text-sm transition-colors"
+                                    style="color:var(--color-1); background:transparent">
+                                    Help & Support
+                                </a>
+
+                                <div style="border-top:1px solid var(--color-3); margin:0.25rem 0"></div>
+
+                                <a href="#" class="block px-4 py-2.5 text-sm transition-colors"
+                                    style="color:var(--color-2); background:transparent">
+                                    Sign out
+                                </a>
+                            </div>
+                        </button>
+                    </div>
+                    <style>
+                        .dropdown-menu a:hover {
+                            background: rgba(112, 137, 147, 0.15) !important;
+                        }
+
+                        @media (max-width: 640px) {
+                            .dropdown-menu {
+                                right: -1rem !important;
+                                left: auto !important;
+                                width: calc(100vw - 2rem) !important;
+                            }
+                        }
+                    </style>
+
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden">
+                        <button
+                            class="mobile-menu-btn inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu hidden md:hidden fixed top-16 left-0 right-0 z-40"
+            style="background:linear-gradient(135deg,var(--color-1) 0%,rgba(112,137,147,0.15) 100%); border-bottom:2px solid var(--color-3)">
+            <div class="px-4 py-4 space-y-2">
+                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium nav-link active"
+                    style="color:var(--color-4)">
+                    Trending
+                </a>
+                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium nav-link"
+                    style="color:var(--color-3)">
+                    Categories
+                </a>
+                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium nav-link"
+                    style="color:var(--color-3)">
+                    Contact
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-20">
+
+        <!-- Hero / Audiobook header -->
+        <section class="book-hero py-12 md:py-16">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row gap-10 md:gap-12 items-start">
+
+                    <!-- Cover (same, but could use audiobook cover variant if you have one) -->
+                    <div class="flex-shrink-0 mx-auto md:mx-0">
+                        <img src="/img/background_image.jpg" alt="The Name of the Wind audiobook cover" width="320"
+                            height="480"
+                            class="book-cover w-56 sm:w-64 md:w-72 lg:w-80 rounded-xl object-cover border border-[var(--accent)]/40"
+                            decoding="async">
+                    </div>
+
+                    <!-- Info - Audiobook focused -->
+                    <div class="flex-1">
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-medium leading-tight mb-3">
+                            The Name of the Wind
+                        </h1>
+                        <p class="text-xl text-[var(--muted)] mb-2">
+                            The Kingkiller Chronicle: Day One
+                        </p>
+                        <p class="text-lg text-[var(--muted)] mb-5">
+                            Audiobook • Narrated by Nick Podehl
+                        </p>
+
+                        <div class="flex items-center gap-4 mb-6 flex-wrap">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-2xl font-semibold">4.52</span>
+                                <div class="flex">
+                                    <i class='bx bxs-star rating-star'></i>
+                                    <i class='bx bxs-star rating-star'></i>
+                                    <i class='bx bxs-star rating-star'></i>
+                                    <i class='bx bxs-star rating-star'></i>
+                                    <i class='bx bxs-star-half rating-star'></i>
+                                </div>
+                            </div>
+                            <span class="text-[var(--muted)]">(892,341 ratings • 27h 55m)</span>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3 mb-7">
+                            <span class="chip px-4 py-1.5 rounded-full text-sm">Fantasy</span>
+                            <span class="chip px-4 py-1.5 rounded-full text-sm">Epic</span>
+                            <span class="chip px-4 py-1.5 rounded-full text-sm">Audiobook</span>
+                            <span class="chip px-4 py-1.5 rounded-full text-sm">Narrated</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8 text-[var(--muted)]">
+                            <div>
+                                <div class="text-xs uppercase tracking-wide">Author</div>
+                                <div class="font-medium text-[var(--text)]">Patrick Rothfuss</div>
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase tracking-wide">Narrator</div>
+                                <div class="font-medium text-[var(--text)]">Nick Podehl</div>
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase tracking-wide">Length</div>
+                                <div class="font-medium text-[var(--text)]">27 hours 55 min</div>
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase tracking-wide">Released</div>
+                                <div class="font-medium text-[var(--text)]">2009 (audio)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- ── Custom Audio Player ─────────────────────────────────────── -->
+        <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex justify-center">
+            <div
+                class="w-full bg-[rgba(25,24,59,0.06)] backdrop-blur-sm border border-[var(--accent)]/30 rounded-2xl p-6 shadow-xl">
+
+                <!-- Now Playing mini info -->
+                <div class="flex items-center justify-between mb-5 flex-wrap gap-4">
+                    <div class="flex items-center gap-4">
+                        <div>
+                            <h3 class="font-medium text-lg">Prologue: A Silence of Three Parts</h3>
+                            <p class="text-sm text-[var(--muted)]">Patrick Rothfuss • Nick Podehl</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button id="prev-chapter"
+                            class="p-2.5 rounded-full hover:bg-[rgba(112,137,147,0.15)] transition">
+                            <i class='bx bx-skip-previous text-2xl'></i>
+                        </button>
+                        <button id="play-pause-large"
+                            class="p-4 rounded-full bg-gradient-to-br from-[var(--color-2)] to-[var(--accent)] text-[var(--color-4)] shadow-lg hover:shadow-xl transition transform hover:scale-105">
+                            <i id="play-icon" class='bx bx-play text-4xl'></i>
+                        </button>
+                        <button id="next-chapter"
+                            class="p-2.5 rounded-full hover:bg-[rgba(112,137,147,0.15)] transition">
+                            <i class='bx bx-skip-next text-2xl'></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Bar + Time + Bookmark indicator -->
+                <div class="mb-6 relative">
+                    <div
+                        class="relative h-2 bg-[rgba(112,137,147,0.25)] rounded-full overflow-hidden cursor-pointer group">
+                        <div id="progress-fill"
+                            class="absolute h-full w-0 bg-gradient-to-r from-[var(--color-2)] to-[var(--accent)] transition-all duration-150">
+                        </div>
+                        <div id="progress-knob"
+                            class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-[var(--color-4)] rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                            style="left:0%; transform:translate(-50%,-50%)"></div>
+                    </div>
+
+                    <!-- Bookmark marker -->
+                    <div id="bookmark-marker"
+                        class="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-yellow-400 rounded-full shadow-md hidden"
+                        style="left:0%; transform:translate(-50%,-50%)"></div>
+
+                    <div class="flex justify-between text-sm text-[var(--muted)] mt-2.5 items-center">
+                        <span id="current-time">0:00</span>
+                        <div class="flex items-center gap-3">
+                            <button id="bookmark-btn" title="Bookmark current position"
+                                class="p-1.5 rounded-full hover:bg-[rgba(112,137,147,0.2)] transition text-[var(--muted)] hover:text-yellow-500">
+                                <i class='bx bx-bookmark-plus text-xl'></i>
+                            </button>
+                            <button id="share-btn" title="Share with timestamp"
+                                class="p-1.5 rounded-full hover:bg-[rgba(112,137,147,0.2)] transition text-[var(--muted)] hover:text-[var(--accent)]">
+                                <i class='bx bx-share-alt text-xl'></i>
+                            </button>
+                        </div>
+                        <span id="duration">27:55:42</span>
+                    </div>
+                </div>
+
+                <!-- Controls Bar - now with Download -->
+                <div class="flex flex-wrap items-center justify-between gap-4">
+
+                    <!-- Playback speed -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-[var(--muted)]">Speed:</span>
+                        <select id="playback-speed"
+                            class="bg-[rgba(25,24,59,0.2)] border border-[var(--accent)]/40 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]">
+                            <option value="0.75">0.75×</option>
+                            <option value="1" selected>1×</option>
+                            <option value="1.25">1.25×</option>
+                            <option value="1.5">1.5×</option>
+                            <option value="2">2×</option>
+                        </select>
+                    </div>
+
+                    <!-- Volume + Download -->
+                    <div class="flex items-center gap-4 sm:gap-6 flex-wrap">
+                        <div class="flex items-center gap-3 min-w-[140px]">
+                            <i class='bx bx-volume-full text-xl text-[var(--muted)]'></i>
+                            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.85"
+                                class="w-full h-1.5 bg-[rgba(112,137,147,0.3)] rounded-full appearance-none cursor-pointer accent-[var(--accent)]">
+                        </div>
+
+                        <!-- Download Button -->
+                        <a id="download-btn"
+                            href="https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3"
+                            download="The_Name_of_the_Wind_Prologue.mp3" title="Download this audiobook track"
+                            class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-[var(--color-2)] to-[var(--accent)] text-[var(--color-4)] font-medium shadow-md hover:shadow-lg hover:opacity-95 transition-all">
+                            <i class='bx bx-download text-xl'></i>
+                            Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Hidden native audio element (unchanged) -->
+        <audio id="audio-player" crossorigin="anonymous">
+            <source src="https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
+
+        <!-- Synopsis + Audiobook Chapters -->
+        <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <h2 class="text-2xl md:text-3xl font-medium mb-6">About the Audiobook</h2>
+            <div class="prose prose-lg max-w-none text-[var(--text)] prose-headings:text-[var(--text)]">
+                <p>
+                    Experience Patrick Rothfuss's masterpiece in audio form, narrated by the acclaimed Nick Podehl.
+                    Perfect for long drives, workouts, or relaxing evenings — immerse yourself in Kvothe's tale with
+                    rich voice acting.
+                </p>
+                <!-- Keep your synopsis paragraphs -->
+                <p>Told in Kvothe's own voice, this is the tale of the magically gifted young man...</p>
+                <!-- ... rest of synopsis ... -->
+            </div>
+
+            <!-- Audiobook Tracks / Chapters -->
+            <div class="mt-16 pt-10 border-t border-[var(--accent)]/30">
+                <h3 class="text-2xl font-medium mb-6">Audiobook Tracks</h3>
+                <div class="space-y-3">
+                    <details
+                        class="group bg-[rgba(161,194,189,0.08)] rounded-lg border border-[var(--accent)]/40 overflow-hidden">
+                        <summary
+                            class="flex justify-between items-center cursor-pointer p-5 text-lg font-medium text-[var(--text)] hover:bg-[rgba(161,194,189,0.12)] transition">
+                            Prologue: A Silence of Three Parts
+                            <span class="track-time">~25 min</span>
+                            <i class='bx bx-chevron-down text-2xl transition-transform group-open:rotate-180'></i>
+                        </summary>
+                        <div class="px-5 pb-5 pt-2 text-[var(--muted)]">
+                            <p>The iconic opening with the three-part silence at the Waystone Inn.</p>
+                            <a href="#"
+                                class="inline-block mt-3 bg-[var(--accent)] text-[var(--color-4)] px-5 py-2 rounded font-medium hover:opacity-90 transition">
+                                <i class='bx bx-play mr-1'></i> Play Track
+                            </a>
+                        </div>
+                    </details>
+
+                    <details
+                        class="group bg-[rgba(161,194,189,0.08)] rounded-lg border border-[var(--accent)]/40 overflow-hidden">
+                        <summary
+                            class="flex justify-between items-center cursor-pointer p-5 text-lg font-medium text-[var(--text)] hover:bg-[rgba(161,194,189,0.12)] transition">
+                            Chapter 1: A Place for Demons
+                            <span class="track-time">~30 min</span>
+                            <i class='bx bx-chevron-down text-2xl transition-transform group-open:rotate-180'></i>
+                        </summary>
+                        <div class="px-5 pb-5 pt-2 text-[var(--muted)]">
+                            <p>Introduction to rumors and the inn's atmosphere.</p>
+                            <a href="#"
+                                class="inline-block mt-3 bg-[var(--accent)] text-[var(--color-4)] px-5 py-2 rounded font-medium hover:opacity-90 transition">
+                                <i class='bx bx-play mr-1'></i> Play Track
+                            </a>
+                        </div>
+                    </details>
+
+                    <!-- Add more (example pattern - extend as needed) -->
+                    <details class="group ...">
+                        <summary class="cursor-pointer">Chapter 2: A Beautiful Day <span class="track-time">~20
+                                min</span>
+                        </summary>
+                        <div ...> ... Play button ... </div>
+                    </details>
+
+                    <!-- ... more chapters ... -->
+
+                    <details class="group ...">
+                        <summary class="cursor-pointer">Chapter 72: Borrorill <span class="track-time">~35 min</span>
+                        </summary>
+                        <div ...>
+                            <p>Late-game intensity (spoiler-free description).</p>
+                            <a href="#" class="...">Play Track</a>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button
+                        class="px-8 py-3 border-2 border-[var(--accent)] rounded-lg text-[var(--text)] hover:bg-[rgba(161,194,189,0.1)] transition">
+                        View All Tracks (94 + Prologue)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Readers Also Enjoyed (keep or change to "Audiobooks You May Like") -->
+            <div class="mt-16 pt-10 border-t border-[var(--accent)]/30">
+                <h3 class="text-xl font-medium mb-5">Audiobooks You May Enjoy</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Example related audiobook card -->
+                    <div class="related-card p-4 rounded-lg hover:shadow-lg transition">
+                        <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1474154022i/186074.jpg"
+                            alt="Related Audiobook Cover" class="w-full h-48 object-cover rounded-md mb-4">
+                        <h4 class="text-lg font-medium mb-1">The Wise</h4>
+                    </div>
+                    <!-- Example related audiobook card -->
+                    <div class="related-card p-4 rounded-lg hover:shadow-lg transition">
+                        <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1474154022i/186074.jpg"
+                            alt="Related Audiobook Cover" class="w-full h-48 object-cover rounded-md mb-4">
+                        <h4 class="text-lg font-medium mb-1">The Wise</h4>
+                    </div>
+                    <!-- Example related audiobook card -->
+                    <div class="related-card p-4 rounded-lg hover:shadow-lg transition">
+                        <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1474154022i/186074.jpg"
+                            alt="Related Audiobook Cover" class="w-full h-48 object-cover rounded-md mb-4">
+                        <h4 class="text-lg font-medium mb-1">The Wise</h4>
+                    </div>
+                    <!-- Example related audiobook card -->
+                    <div class="related-card p-4 rounded-lg hover:shadow-lg transition">
+                        <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1474154022i/186074.jpg"
+                            alt="Related Audiobook Cover" class="w-full h-48 object-cover rounded-md mb-4">
+                        <h4 class="text-lg font-medium mb-1">The Wise</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Optional floating action bar on mobile -->
+        <div
+            class="fixed bottom-0 left-0 right-0 md:hidden bg-[var(--bg)] border-t border-[var(--accent)]/30 py-3 px-4 shadow-xl z-40">
+            <div class="flex justify-around items-center max-w-md mx-auto">
+                <button class="flex flex-col items-center text-[var(--muted)] hover:text-[var(--text)]">
+                    <i class='bx bx-book-reader text-3xl'></i>
+                    <span class="text-xs mt-1">Read</span>
+                </button>
+                <button class="flex flex-col items-center text-[var(--muted)] hover:text-[var(--text)]">
+                    <i class='bx bx-bookmark-plus text-3xl'></i>
+                    <span class="text-xs mt-1">Save</span>
+                </button>
+                <button class="flex flex-col items-center text-[var(--muted)] hover:text-[var(--text)]">
+                    <i class='bx bx-star text-3xl'></i>
+                    <span class="text-xs mt-1">Rate</span>
+                </button>
+            </div>
+        </div>
+        <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Tabs -->
+            <div class="flex overflow-x-auto mt-6 mb-8 border-b border-[var(--accent)]/40">
+                <button class="tab-btn active">General</button>
+                <!-- <button class="tab-btn">Spoilers</button>
+            <button class="tab-btn">Questions</button>
+            <button class="tab-btn">Theories</button>
+            <button class="tab-btn">Fan Art</button> -->
+            </div>
+
+            <!-- New Post / Reply Box -->
+            <div class="mb-10">
+                <textarea placeholder="Share your thoughts... (use [spoiler]text[/spoiler] for spoilers)"
+                    class="comment-box w-full p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] min-h-[120px] resize-y text-[var(--text)]"></textarea>
+                <div class="mt-3 flex justify-between items-center">
+                    <div class="text-sm text-[var(--muted)]">Markdown supported • Spoilers hidden by default</div>
+                    <button
+                        class="bg-[var(--accent)] text-[var(--color-4)] px-6 py-2.5 rounded-lg font-medium hover:opacity-90 transition">
+                        Post Comment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="space-y-8">
+
+                <!-- Comment 1 -->
+                <div class="comment-card p-6 rounded-xl">
+                    <div class="flex items-start gap-4">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                            alt="User" class="w-12 h-12 rounded-full object-cover border-2 border-[var(--accent)]/40">
+                        <div class="flex-1">
+                            <div class="flex justify-between items-baseline">
+                                <h3 class="font-medium">LunaReads</h3>
+                                <span class="text-xs text-[var(--muted)]">2 days ago</span>
+                            </div>
+                            <p class="mt-2 text-[var(--text)]">
+                                Just finished my third re-read and I'm still finding new layers in Kvothe's
+                                storytelling.
+                                The way Rothfuss plays with unreliable narration is masterful. Anyone else notice new
+                                details on re-reads?
+                            </p>
+                            <div class="mt-4 flex gap-6 text-sm text-[var(--muted)]">
+                                <button class="flex items-center gap-1 hover:text-[var(--accent)]">
+                                    <i class='bx bx-like'></i> 142
+                                </button>
+                                <button class="flex items-center gap-1 hover:text-[var(--accent)]">
+                                    <i class='bx bx-reply'></i> Reply (18)
+                                </button>
+                            </div>
+
+                            <!-- Replies -->
+                            <div class="comment-thread mt-6 space-y-6">
+                                <div>
+                                    <div class="flex items-start gap-3">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                            alt="User" class="w-10 h-10 rounded-full">
+                                        <div>
+                                            <div class="flex justify-between">
+                                                <span class="font-medium text-sm">ElaraTheBard</span>
+                                                <span class="text-xs text-[var(--muted)]">1 day ago</span>
+                                            </div>
+                                            <p class="text-sm mt-1">
+                                                Yes! The scene with <span class="spoiler"
+                                                    onclick="this.classList.toggle('revealed')">Auri's gifts</span> hits
+                                                so
+                                                differently the second time.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comment 2 (with spoiler) -->
+                <div class="comment-card p-6 rounded-xl">
+                    <div class="flex items-start gap-4">
+                        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                            alt="User" class="w-12 h-12 rounded-full object-cover border-2 border-[var(--accent)]/40">
+                        <div class="flex-1">
+                            <div class="flex justify-between items-baseline">
+                                <h3 class="font-medium">KvotheFan92</h3>
+                                <span class="text-xs text-[var(--muted)]">5 days ago</span>
+                            </div>
+                            <p class="mt-2">
+                                Theory: <span class="spoiler" onclick="this.classList.toggle('revealed')">Kvothe is
+                                    actually
+                                    telling the story to Chronicler as a way to hide from the Chandrian</span>. Change
+                                my
+                                mind.
+                            </p>
+                            <div class="mt-4 flex gap-6 text-sm text-[var(--muted)]">
+                                <button class="flex items-center gap-1 hover:text-[var(--accent)]">
+                                    <i class='bx bx-like'></i> 89
+                                </button>
+                                <button class="flex items-center gap-1 hover:text-[var(--accent)]">
+                                    <i class='bx bx-reply'></i> Reply (42)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add more comment cards as needed -->
+
+            </div>
+
+            <!-- Load more -->
+            <div class="text-center mt-12">
+                <button
+                    class="px-8 py-3 border-2 border-[var(--accent)] rounded-lg text-[var(--text)] hover:bg-[rgba(161,194,189,0.1)] transition">
+                    Load More Discussions
+                </button>
+            </div>
+        </main>
+
+        <!-- Mobile floating bar - updated icons -->
+        <div
+            class="fixed bottom-0 left-0 right-0 md:hidden bg-[var(--bg)] border-t border-[var(--accent)]/30 py-3 px-4 shadow-xl z-40">
+            <div class="flex justify-around items-center max-w-md mx-auto">
+                <button class="flex flex-col items-center text-[var(--muted)] hover:text-[var(--text)]">
+                    <i class='bx bx-play-circle text-3xl'></i>
+                    <span class="text-xs mt-1">Play</span>
+                </button>
+                <button class="flex flex-col items-center text-[var(--muted)] hover:text-[var(--text)]">
+                    <i class='bx bx-library text-3xl'></i>
+                    <span class="text-xs mt-1">Library</span>
+                </button>
+                <button class="flex flex-col items-center text-[var(--muted)] hover:text-[var(--text)]">
+                    <i class='bx bx-star text-3xl'></i>
+                    <span class="text-xs mt-1">Rate</span>
+                </button>
+            </div>
+        </div>
+
+        <script>
+            // Notification dropdown toggle + badge logic
+            document.addEventListener('DOMContentLoaded', () => {
+                const bellBtn = document.getElementById('notification-btn');
+                const dropdown = document.getElementById('notification-dropdown');
+                const badge = document.getElementById('notification-badge');
+
+                let unreadCount = 3; // Change this based on real data (e.g. from localStorage or API)
+
+                function updateBadge() {
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+
+                updateBadge();
+
+                bellBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                    // Optional: mark as read when opened
+                    // unreadCount = 0;
+                    // updateBadge();
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!bellBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            });
+            // Simple toggle for dropdown (no external dependency)
+            document.addEventListener('DOMContentLoaded', () => {
+                // User dropdown toggle
+                const avatarBtn = document.querySelector('.user-dropdown-btn');
+                const dropdown = document.querySelector('.dropdown-menu');
+
+                if (avatarBtn && dropdown) {
+                    avatarBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        dropdown.classList.toggle('hidden');
+                    });
+
+                    // Close when clicking outside
+                    document.addEventListener('click', (e) => {
+                        if (!avatarBtn.contains(e.target)) {
+                            dropdown.classList.add('hidden');
+                        }
+                    });
+                }
+
+                // Mobile menu toggle
+                const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+                const mobileMenu = document.querySelector('.mobile-menu');
+
+                if (mobileMenuBtn && mobileMenu) {
+                    mobileMenuBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        mobileMenu.classList.toggle('hidden');
+                    });
+
+                    // Close mobile menu when clicking outside
+                    document.addEventListener('click', (e) => {
+                        if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                    });
+
+                    // Close mobile menu when clicking a link
+                    const mobileLinks = mobileMenu.querySelectorAll('a');
+                    mobileLinks.forEach(link => {
+                        link.addEventListener('click', () => {
+                            mobileMenu.classList.add('hidden');
+                        });
+                    });
+                }
+            });
+
+            // ── Audio Player Logic + Bookmark + Share ───────────────────────────────
+            document.addEventListener('DOMContentLoaded', () => {
+                const audio = document.getElementById('audio-player');
+                const playPauseLarge = document.getElementById('play-pause-large');
+                const playIcon = document.getElementById('play-icon');
+                const progressFill = document.getElementById('progress-fill');
+                const progressKnob = document.getElementById('progress-knob');
+                const currentTimeEl = document.getElementById('current-time');
+                const durationEl = document.getElementById('duration');
+                const volumeSlider = document.getElementById('volume-slider');
+                const playbackSpeed = document.getElementById('playback-speed');
+                const bookmarkBtn = document.getElementById('bookmark-btn');
+                const shareBtn = document.getElementById('share-btn');
+                const bookmarkMarker = document.getElementById('bookmark-marker');
+
+                let isSeeking = false;
+                const BOOK_ID = 'name-of-the-wind'; // unique per book - change for each title
+
+                // Format time
+                function formatTime(seconds) {
+                    const h = Math.floor(seconds / 3600);
+                    const m = Math.floor((seconds % 3600) / 60);
+                    const s = Math.floor(seconds % 60);
+                    if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                    return `${m}:${s.toString().padStart(2, '0')}`;
+                }
+
+                // Bookmark handling
+                function saveBookmark() {
+                    const bookmark = {
+                        time: audio.currentTime,
+                        formatted: formatTime(audio.currentTime),
+                        chapter: "Current position" // can be improved later with real chapter name
+                    };
+                    localStorage.setItem(`bookmark_${BOOK_ID}`, JSON.stringify(bookmark));
+                    updateBookmarkUI(bookmark.time);
+                    alert(`Bookmarked at ${bookmark.formatted}!`);
+                }
+
+                function loadBookmark() {
+                    const saved = localStorage.getItem(`bookmark_${BOOK_ID}`);
+                    if (saved) {
+                        const bookmark = JSON.parse(saved);
+                        updateBookmarkUI(bookmark.time);
+                        // Optional: auto-jump on load?
+                        // audio.currentTime = bookmark.time;
+                    }
+                }
+
+                function updateBookmarkUI(time) {
+                    if (audio.duration && time > 0) {
+                        const percent = (time / audio.duration) * 100;
+                        bookmarkMarker.style.left = percent + '%';
+                        bookmarkMarker.classList.remove('hidden');
+                    }
+                }
+
+                function jumpToBookmark() {
+                    const saved = localStorage.getItem(`bookmark_${BOOK_ID}`);
+                    if (saved) {
+                        const { time } = JSON.parse(saved);
+                        audio.currentTime = time;
+                    } else {
+                        alert("No bookmark saved yet.");
+                    }
+                }
+
+                bookmarkBtn.addEventListener('click', saveBookmark);
+                bookmarkMarker.addEventListener('click', jumpToBookmark); // click dot to jump
+
+                // Share with timestamp
+                shareBtn.addEventListener('click', () => {
+                    const time = Math.floor(audio.currentTime);
+                    const url = `${window.location.href.split('#')[0]}#t=${time}`;
+                    const title = "The Name of the Wind – listening at " + formatTime(time);
+
+                    if (navigator.share) {
+                        navigator.share({
+                            title: title,
+                            text: "Check out this moment in the audiobook!",
+                            url: url
+                        }).catch(err => console.log("Share failed", err));
+                    } else {
+                        // Fallback: copy to clipboard
+                        navigator.clipboard.writeText(url).then(() => {
+                            alert("Link with timestamp copied!\n" + url);
+                        }).catch(() => {
+                            prompt("Copy this link:", url);
+                        });
+                    }
+                });
+
+                // ── Existing player logic ───────────────────────────────────────
+                audio.addEventListener('timeupdate', () => {
+                    if (!isSeeking) {
+                        const percent = (audio.currentTime / audio.duration) * 100;
+                        progressFill.style.width = percent + '%';
+                        progressKnob.style.left = percent + '%';
+                        currentTimeEl.textContent = formatTime(audio.currentTime);
+                    }
+                });
+
+                audio.addEventListener('loadedmetadata', () => {
+                    durationEl.textContent = formatTime(audio.duration);
+                    loadBookmark(); // load bookmark after duration is known
+                });
+
+                audio.addEventListener('ended', () => {
+                    playIcon.className = 'bx bx-play text-4xl';
+                });
+
+                function togglePlay() {
+                    if (audio.paused) {
+                        audio.play();
+                        playIcon.className = 'bx bx-pause text-4xl';
+                    } else {
+                        audio.pause();
+                        playIcon.className = 'bx bx-play text-4xl';
+                    }
+                }
+
+                playPauseLarge.addEventListener('click', togglePlay);
+                document.getElementById('main-play-btn')?.addEventListener('click', togglePlay);
+
+                // Seek
+                const progressContainer = progressFill.parentElement;
+                function seek(e) {
+                    const rect = progressContainer.getBoundingClientRect();
+                    const pos = (e.clientX - rect.left) / rect.width;
+                    audio.currentTime = pos * audio.duration;
+                }
+
+                progressContainer.addEventListener('click', seek);
+                progressContainer.addEventListener('mousedown', (e) => {
+                    isSeeking = true;
+                    seek(e);
+                    const move = (ev) => seek(ev);
+                    const up = () => {
+                        isSeeking = false;
+                        document.removeEventListener('mousemove', move);
+                        document.removeEventListener('mouseup', up);
+                    };
+                    document.addEventListener('mousemove', move);
+                    document.addEventListener('mouseup', up);
+                });
+
+                // Volume & Speed
+                volumeSlider.addEventListener('input', () => {
+                    audio.volume = volumeSlider.value;
+                });
+
+                playbackSpeed.addEventListener('change', () => {
+                    audio.playbackRate = parseFloat(playbackSpeed.value);
+                });
+
+                // Prev/Next (30s skip for now)
+                document.getElementById('prev-chapter').addEventListener('click', () => {
+                    audio.currentTime = Math.max(0, audio.currentTime - 30);
+                });
+                document.getElementById('next-chapter').addEventListener('click', () => {
+                    audio.currentTime = Math.min(audio.duration, audio.currentTime + 30);
+                });
+            });
+            // Dynamic download link (updates if src changes)
+            const downloadBtn = document.getElementById('download-btn');
+            audio.addEventListener('loadedmetadata', () => {
+                const source = audio.currentSrc || audio.querySelector('source')?.src;
+                if (source) {
+                    downloadBtn.href = source;
+                    // Optional: better filename - you can customize per chapter later
+                    downloadBtn.download = "The_Name_of_the_Wind_" + document.querySelector('#current-chapter-name')?.textContent.replace(/[^a-z0-9]/gi, '_') + ".mp3" || "audiobook.mp3";
+                }
+            });
+        </script>
+
+</body>
+
+</html>
