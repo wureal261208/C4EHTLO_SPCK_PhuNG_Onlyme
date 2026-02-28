@@ -12,11 +12,11 @@ const API_OPTIONS = {
 // Demo data - will be replaced with Firebase data
 // Load books from localStorage if available, otherwise use default data
 let books = JSON.parse(localStorage.getItem('adminBooks')) || [
-    { id: 1, title: "The Name of the Wind", author: "Patrick Rothfuss", genre: "Fantasy", pages: 662, status: "published" },
-    { id: 2, title: "The Wise Man's Fear", author: "Patrick Rothfuss", genre: "Fantasy", pages: 994, status: "published" },
-    { id: 3, title: "The Slow Regard of Silent Things", author: "Patrick Rothfuss", genre: "Fantasy", pages: 176, status: "draft" },
-    { id: 4, title: "A Court of Thorns and Roses", author: "Sarah J. Maas", genre: "Fantasy", pages: 419, status: "published" },
-    { id: 5, title: "Atomic Habits", author: "James Clear", genre: "Self-Help", pages: 320, status: "draft" }
+    { id: 1, title: "The Name of the Wind", author: "Patrick Rothfuss", genre: "Fantasy", pages: 662, status: "published", image: "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80" },
+    { id: 2, title: "The Wise Man's Fear", author: "Patrick Rothfuss", genre: "Fantasy", pages: 994, status: "published", image: "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80" },
+    { id: 3, title: "The Slow Regard of Silent Things", author: "Patrick Rothfuss", genre: "Fantasy", pages: 176, status: "draft", image: "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80" },
+    { id: 4, title: "A Court of Thorns and Roses", author: "Sarah J. Maas", genre: "Fantasy", pages: 419, status: "published", image: "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80" },
+    { id: 5, title: "Atomic Habits", author: "James Clear", genre: "Self-Help", pages: 320, status: "draft", image: "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80" }
 ];
 
 // Function to save books to localStorage
@@ -67,6 +67,12 @@ function authenticateUser(username, password) {
     // Check collab credentials
     if (username === COLLAB_CREDENTIALS.username && password === COLLAB_CREDENTIALS.password) {
         return { user: COLLAB_CREDENTIALS.username, role: 'editor' };
+    }
+    // Check users from localStorage
+    const users = getUsers();
+    const user = users.find(u => u.email.toLowerCase() === username.toLowerCase() && u.password === password);
+    if (user) {
+        return { user: user.email, role: user.role };
     }
     // Invalid credentials
     return null;
@@ -132,6 +138,7 @@ function loadData() {
     renderBooks();
     renderEditors();
     renderStats();
+    renderUsers();
     updateStatsCards();
 }
 
@@ -164,6 +171,7 @@ function updateRoleToggle() {
 
 function renderBooks() {
     const container = document.getElementById('books-list');
+    if (!container) return;
     
     if (books.length === 0) {
         container.innerHTML = `
@@ -177,7 +185,7 @@ function renderBooks() {
     
     container.innerHTML = books.map(book => `
         <div class="book-item">
-            <img src="https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80" alt="${book.title}">
+            <img src="${book.image || 'https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80'}" alt="${book.title}">
             <div class="book-info">
                 <div class="book-title">${book.title}</div>
                 <div class="book-author">${book.author}</div>
@@ -226,14 +234,25 @@ function addBook(event) {
     
     const title = document.getElementById('book-title').value;
     const author = document.getElementById('book-author').value;
+    const imageUrl = document.getElementById('book-image').value;
     const genre = document.getElementById('book-genre').value;
     const pages = document.getElementById('book-pages').value;
     const status = document.getElementById('book-status').value;
     
+    // Default cover image if none provided
+    const defaultImage = "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80";
+    
+    // ensure a usable image string; if the user entered something but it's not a valid URL we still fall back
+    const finalImage = (imageUrl && /^https?:\/\//i.test(imageUrl.trim())) ? imageUrl.trim() : defaultImage;
+    if (imageUrl && finalImage === defaultImage) {
+        console.warn('Provided book image URL was invalid, using default instead:', imageUrl);
+    }
+
     const newBook = {
         id: Date.now(),
         title,
         author,
+        image: finalImage,
         genre,
         pages: parseInt(pages),
         status
@@ -284,13 +303,20 @@ async function fetchBooksFromAPI() {
         bookList.slice(0, 10).forEach(apiBook => {
             const exists = books.some(b => b.title.toLowerCase() === apiBook.title?.toLowerCase());
             if (!exists) {
-                books.push({
+                // compute cover from API if available
+        const defaultImageUrl = "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80";
+        const coverUrl = apiBook.cover_i
+            ? `https://covers.openlibrary.org/b/id/${apiBook.cover_i}-M.jpg`
+            : defaultImageUrl;
+
+        books.push({
                     id: Date.now() + Math.random(),
                     title: apiBook.title || 'Unknown Title',
                     author: apiBook.author_name ? apiBook.author_name.join(', ') : 'Unknown Author',
                     genre: apiBook.subject ? apiBook.subject[0] : 'Fantasy',
                     pages: apiBook.number_of_pages_median || 0,
-                    status: 'draft'
+                    status: 'draft',
+                    image: coverUrl
                 });
                 addedCount++;
             }
@@ -312,6 +338,7 @@ async function fetchBooksFromAPI() {
 
 function renderEditors() {
     const container = document.getElementById('editors-list');
+    if (!container) return;
     
     if (editors.length === 0) {
         container.innerHTML = `
@@ -352,20 +379,41 @@ function inviteEditor(event) {
     const email = document.getElementById('editor-email').value;
     const permissions = document.getElementById('editor-permissions').value;
     
+    // Generate a random password for the editor
+    const generatedPassword = 'Editor' + Math.random().toString(36).slice(-4) + '123';
+    
     const newEditor = {
         id: Date.now(),
         name,
         email,
         status: 'active',
-        permissions
+        permissions,
+        generatedPassword: generatedPassword
     };
+    
+    // Create actual user account in localStorage
+    const users = getUsers();
+    const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    
+    if (!existingUser) {
+        users.push({
+            email: email,
+            password: generatedPassword,
+            role: 'editor'
+        });
+        localStorage.setItem('users', JSON.stringify(users));
+    } else {
+        showNotification('User already exists with this email!', 'error');
+        return;
+    }
     
     editors.push(newEditor);
     renderEditors();
+    renderUsers();
     updateStatsCards();
     closeModal('editor');
     event.target.reset();
-    showNotification('Editor invitation sent!', 'success');
+    showNotification('Editor account created! Password: ' + generatedPassword, 'success');
 }
 
 function toggleEditorStatus(editorId) {
@@ -387,6 +435,60 @@ function removeEditor(editorId) {
 }
 
 // ═════════════════════════════════════════════════════════════
+// USERS MANAGEMENT (Admin Only)
+// ═════════════════════════════════════════════════════════════
+
+function getUsers() {
+    return JSON.parse(localStorage.getItem('users')) || [];
+}
+
+function renderUsers() {
+    const container = document.getElementById('users-list');
+    if (!container) return;
+    
+    const users = getUsers();
+    
+    if (users.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class='bx bx-user'></i>
+                <p>No users registered yet.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = users.map(user => `
+        <div class="user-item">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="${user.email}">
+            <div class="user-info">
+                <div class="user-name">${user.email.split('@')[0]}</div>
+                <div class="user-email">${user.email}</div>
+            </div>
+            <span class="user-role-badge ${user.role}">${user.role === 'admin' ? 'Admin' : user.role === 'editor' ? 'Editor' : 'User'}</span>
+            <span class="user-password-hidden">••••••••</span>
+            ${currentRole === 'admin' ? `
+                <div class="user-actions">
+                    <button class="btn-remove" onclick="removeUser('${user.email}')" title="Remove User">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+function removeUser(email) {
+    if (confirm(`Are you sure you want to remove user: ${email}?`)) {
+        let users = getUsers();
+        users = users.filter(u => u.email !== email);
+        localStorage.setItem('users', JSON.stringify(users));
+        renderUsers();
+        showNotification('User removed successfully!', 'success');
+    }
+}
+
+// ═════════════════════════════════════════════════════════════
 // STATS
 // ═════════════════════════════════════════════════════════════
 
@@ -395,6 +497,7 @@ function updateStatsCards() {
     const published = books.filter(b => b.status === 'published').length;
     const drafts = books.filter(b => b.status === 'draft').length;
     const totalEditors = editors.length;
+    const totalUsers = getUsers().length;
     
     document.getElementById('stat-total-books').textContent = totalBooks;
     document.getElementById('stat-published').textContent = published;
@@ -404,6 +507,7 @@ function updateStatsCards() {
 
 function renderStats() {
     const container = document.getElementById('stats-content');
+    if (!container) return;
     
     const stats = [
         { icon: 'bx-book', title: 'Total Books', value: books.length, desc: 'All books in library' },
@@ -449,23 +553,33 @@ function navigateTo(section) {
     const booksCol = document.getElementById('books-column');
     const collabCol = document.getElementById('collaborations-column');
     const statsCol = document.getElementById('stats-column');
+    const usersCol = document.getElementById('users-column');
     
     if (section === 'books') {
         booksCol.style.display = 'block';
         collabCol.style.display = 'none';
         statsCol.style.display = 'none';
+        if (usersCol) usersCol.style.display = 'none';
     } else if (section === 'collaborations' || section === 'editors') {
         booksCol.style.display = 'none';
         collabCol.style.display = 'block';
         statsCol.style.display = 'none';
+        if (usersCol) usersCol.style.display = 'none';
     } else if (section === 'stats') {
         booksCol.style.display = 'none';
         collabCol.style.display = 'none';
         statsCol.style.display = 'block';
+        if (usersCol) usersCol.style.display = 'none';
+    } else if (section === 'users') {
+        booksCol.style.display = 'none';
+        collabCol.style.display = 'none';
+        statsCol.style.display = 'none';
+        if (usersCol) usersCol.style.display = 'block';
     } else {
         booksCol.style.display = 'block';
         collabCol.style.display = 'block';
         statsCol.style.display = 'block';
+        if (usersCol) usersCol.style.display = 'block';
     }
 }
 
@@ -496,7 +610,7 @@ function showNotification(message, type = 'info') {
         position: fixed;
         top: 20px;
         right: 20px;
-        background: ${type === 'success' ? '#27ae60' : '#3498db'};
+        background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
         color: white;
         padding: 15px 25px;
         border-radius: 8px;
@@ -504,7 +618,7 @@ function showNotification(message, type = 'info') {
         z-index: 10000;
         animation: slideIn 0.3s ease;
     `;
-    notification.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-info-circle'}'></i> ${message}`;
+    notification.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : type === 'error' ? 'bx-x-circle' : 'bx-info-circle'}'></i> ${message}`;
     
     document.body.appendChild(notification);
     
