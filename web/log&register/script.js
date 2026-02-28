@@ -8,6 +8,11 @@ function initUsersDB() {
                 role: 'admin'
             },
             {
+                email: 'editor@bookworm.com',
+                password: 'Editor123',
+                role: 'editor'
+            },
+            {
                 email: 'user@bookworm.com',
                 password: 'User123',
                 role: 'user'
@@ -76,7 +81,32 @@ const registerForm = {
 
 registerForm.btn.addEventListener("click", (e) => {
     e.preventDefault();
+    performRegister();
+});
 
+// Handle Enter key for register form
+registerForm.email.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        performRegister();
+    }
+});
+
+registerForm.pass.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        performRegister();
+    }
+});
+
+registerForm.pass2.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        performRegister();
+    }
+});
+
+function performRegister() {
     const email = registerForm.email.value.trim();
     const pass = registerForm.pass.value;
     const pass2 = registerForm.pass2.value;
@@ -156,7 +186,7 @@ registerForm.btn.addEventListener("click", (e) => {
     // Redirect to main page
     alert("Registration successful! Welcome to BookWorm!");
     window.location.href = "../main/index(acc).html";
-});
+}
 
 // Login Form
 const loginForm = {
@@ -169,7 +199,25 @@ const loginForm = {
 
 loginForm.btn.addEventListener("click", (e) => {
     e.preventDefault();
+    performLogin();
+});
 
+// Handle Enter key for login form
+loginForm.email.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        performLogin();
+    }
+});
+
+loginForm.pass.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        performLogin();
+    }
+});
+
+function performLogin() {
     const email = loginForm.email.value.trim();
     const pass = loginForm.pass.value;
 
@@ -206,16 +254,22 @@ loginForm.btn.addEventListener("click", (e) => {
         return;
     }
 
-// Save current user to localStorage
+    // Check if user is banned
+    if (user.banned === true) {
+        showError(loginForm.errEmail, "Your account has been banned. Please contact the administrator.");
+        return;
+    }
+
+    // Save current user to localStorage
     localStorage.setItem('currentUser', JSON.stringify(user));
     localStorage.setItem('user', user.email);
     localStorage.setItem('userRole', user.role);
 
     // Redirect based on role
     alert("Login successful! Welcome back!");
-    if (user.role === 'admin') {
+    if (user.role === 'admin' || user.role === 'editor') {
         window.location.href = "../admin/index(admin).html";
     } else {
         window.location.href = "../main/index(acc).html";
     }
-});
+}

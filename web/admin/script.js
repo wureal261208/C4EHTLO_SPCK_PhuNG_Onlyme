@@ -24,11 +24,51 @@ function saveBooksToStorage() {
     localStorage.setItem('adminBooks', JSON.stringify(books));
 }
 
-let editors = [
+// Initialize default books in localStorage if not exists
+function initializeBooks() {
+    const storedBooks = localStorage.getItem('adminBooks');
+    if (!storedBooks) {
+        localStorage.setItem('adminBooks', JSON.stringify(books));
+    } else {
+        books = JSON.parse(storedBooks);
+    }
+}
+
+// Load editors from localStorage if available, otherwise use default data
+let editors = JSON.parse(localStorage.getItem('adminEditors')) || [
     { id: 1, name: "John Smith", email: "john@example.com", status: "active", permissions: "manage" },
     { id: 2, name: "Emily Davis", email: "emily@example.com", status: "active", permissions: "edit" },
     { id: 3, name: "Michael Brown", email: "michael@example.com", status: "inactive", permissions: "edit" }
 ];
+
+// Function to save editors to localStorage
+function saveEditorsToStorage() {
+    localStorage.setItem('adminEditors', JSON.stringify(editors));
+}
+
+// Initialize default editors in localStorage if not exists
+function initializeEditors() {
+    const storedEditors = localStorage.getItem('adminEditors');
+    if (!storedEditors) {
+        localStorage.setItem('adminEditors', JSON.stringify(editors));
+    } else {
+        editors = JSON.parse(storedEditors);
+    }
+}
+
+// Function to shorten email for display (e.g., bannanan@bookworm.com -> ban...@bookworm.com)
+function shortenEmail(email) {
+    const parts = email.split('@');
+    if (parts.length !== 2) return email;
+    
+    const username = parts[0];
+    const domain = parts[1];
+    
+    if (username.length <= 3) {
+        return username.substring(0, 1) + '...' + '@' + domain;
+    }
+    return username.substring(0, 3) + '...' + '@' + domain;
+}
 
 let currentRole = 'admin';
 let currentUser = null;
@@ -38,8 +78,14 @@ let currentUser = null;
 // ═════════════════════════════════════════════════════════════
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize localStorage with default data if not exists
+    initializeBooks();
+    initializeEditors();
+    
     checkAuth();
     loadData();
+    // show overview by default
+    navigateTo('overview');
 });
 
 // ═════════════════════════════════════════════════════════════
@@ -48,8 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Admin credentials
 const ADMIN_CREDENTIALS = {
-    username: 'admin@admin.com',
-    password: 'admin123'
+    username: 'admin@bookworm.com',
+    password: 'Admin123'
 };
 
 // Collab (Editor) credentials
@@ -100,6 +146,8 @@ function showLoginPrompt() {
         // Save to localStorage
         localStorage.setItem('user', authResult.user);
         localStorage.setItem('userRole', authResult.role);
+        // Mark as first login to ensure dashboard is shown
+        localStorage.setItem('firstLogin', 'true');
         showNotification('Login successful! Welcome ' + username.split('@')[0], 'success');
         return authResult;
     } else {
@@ -147,21 +195,44 @@ function loadData() {
 // ═════════════════════════════════════════════════════════════
 
 function switchRole(role) {
+    // Prevent non-admin users from switching to admin role
+    if (role === 'admin' && currentRole !== 'admin') {
+        showNotification('Only administrators can switch to admin role!', 'error');
+        return;
+    }
+    
     currentRole = role;
     updateRoleToggle();
     loadData();
 }
+
+// responsive sidebar toggle for mobile
+function toggleSidebar() {
+    const sidebar = document.querySelector('.admin-sidebar');
+    sidebar.classList.toggle('open');
+}
+
+// close sidebar when clicking outside on small screens
+document.addEventListener('click', (e) => {
+    const sidebar = document.querySelector('.admin-sidebar');
+    const toggle = document.querySelector('.sidebar-toggle');
+    if (sidebar && sidebar.classList.contains('open')) {
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+            sidebar.classList.remove('open');
+        }
+    }
+});
 
 function updateRoleToggle() {
     const adminBtn = document.getElementById('btn-admin');
     const editorBtn = document.getElementById('btn-editor');
     
     if (currentRole === 'admin') {
-        adminBtn.classList.add('active');
-        editorBtn.classList.remove('active');
+        if (adminBtn) adminBtn.classList.add('active');
+        if (editorBtn) editorBtn.classList.remove('active');
     } else {
-        editorBtn.classList.add('active');
-        adminBtn.classList.remove('active');
+        if (editorBtn) editorBtn.classList.add('active');
+        if (adminBtn) adminBtn.classList.remove('active');
     }
 }
 
@@ -340,30 +411,32 @@ function renderEditors() {
     const container = document.getElementById('editors-list');
     if (!container) return;
     
-    if (editors.length === 0) {
+    // Get users with role = "editor" from localStorage
+    const allUsers = getUsers();
+    const editorsFromUsers = allUsers.filter(user => user.role === 'editor');
+    
+    if (editorsFromUsers.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <i class='bx bx-group'></i>
-                <p>No editors yet. Invite your first editor!</p>
+                <i class='bx bx-user'></i>
+                <p>No editors yet. Add your first editor!</p>
             </div>
         `;
         return;
     }
     
-    container.innerHTML = editors.map(editor => `
-        <div class="editor-item">
-            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="${editor.name}">
-            <div class="editor-info">
-                <div class="editor-name">${editor.name}</div>
-                <div class="editor-email">${editor.email}</div>
+    container.innerHTML = editorsFromUsers.map(user => `
+        <div class="user-item">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="${user.email}">
+            <div class="user-info">
+                <div class="user-name">${user.email.split('@')[0]}</div>
+                <div class="user-email">${shortenEmail(user.email)}</div>
             </div>
-            <span class="editor-status ${editor.status}">${editor.status === 'active' ? 'Active' : 'Inactive'}</span>
+            <span class="user-role-badge editor">Editor</span>
+            <span class="user-password-hidden">••••••••</span>
             ${currentRole === 'admin' ? `
-                <div class="editor-actions">
-                    <button class="btn-unactive" onclick="toggleEditorStatus(${editor.id})" title="${editor.status === 'active' ? 'Deactivate' : 'Activate'}">
-                        <i class='bx ${editor.status === 'active' ? 'bx-user-x' : 'bx-user-check'}'></i>
-                    </button>
-                    <button class="btn-remove" onclick="removeEditor(${editor.id})" title="Remove">
+                <div class="user-actions">
+                    <button class="btn-remove" onclick="removeEditor('${user.email}')" title="Remove Editor">
                         <i class='bx bx-trash'></i>
                     </button>
                 </div>
@@ -408,6 +481,7 @@ function inviteEditor(event) {
     }
     
     editors.push(newEditor);
+    saveEditorsToStorage();
     renderEditors();
     renderUsers();
     updateStatsCards();
@@ -420,15 +494,25 @@ function toggleEditorStatus(editorId) {
     const editor = editors.find(e => e.id === editorId);
     if (editor) {
         editor.status = editor.status === 'active' ? 'inactive' : 'active';
+        saveEditorsToStorage();
         renderEditors();
         showNotification(`Editor ${editor.status === 'active' ? 'activated' : 'deactivated'}!`, 'success');
     }
 }
 
-function removeEditor(editorId) {
-    if (confirm('Are you sure you want to remove this editor?')) {
-        editors = editors.filter(e => e.id !== editorId);
+function removeEditor(email) {
+    if (confirm('Are you sure you want to remove this editor: ' + email + '?')) {
+        // Remove from users list in localStorage
+        let users = getUsers();
+        users = users.filter(u => u.email !== email);
+        localStorage.setItem('users', JSON.stringify(users));
+        
+        // Also remove from editors array if exists
+        editors = editors.filter(e => e.email !== email);
+        saveEditorsToStorage();
+        
         renderEditors();
+        renderUsers();
         updateStatsCards();
         showNotification('Editor removed successfully!', 'success');
     }
@@ -441,6 +525,7 @@ function removeEditor(editorId) {
 function getUsers() {
     return JSON.parse(localStorage.getItem('users')) || [];
 }
+
 
 function renderUsers() {
     const container = document.getElementById('users-list');
@@ -457,26 +542,54 @@ function renderUsers() {
         `;
         return;
     }
-    
-    container.innerHTML = users.map(user => `
-        <div class="user-item">
-            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="${user.email}">
-            <div class="user-info">
-                <div class="user-name">${user.email.split('@')[0]}</div>
-                <div class="user-email">${user.email}</div>
+
+    // filter out admins and group remaining users by role
+    const filtered = users.filter(u => u.role !== 'admin');
+    const groups = {
+        editor: [],
+        user: []
+    };
+    filtered.forEach(u => {
+        if (u.role === 'editor') groups.editor.push(u);
+        else groups.user.push(u);
+    });
+
+    let html = '';
+    function renderGroup(title, list) {
+        if (list.length === 0) return '';
+        return `
+            <div class="user-group" data-role="${title.toLowerCase().split(' ')[0]}">
+                <h4>${title} (${list.length})</h4>
+                ${list.map(user => `
+                    <div class="user-item">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="${user.email}">
+                        <div class="user-info">
+                            <div class="user-name">${user.email.split('@')[0]}</div>
+                            <div class="user-email">${shortenEmail(user.email)}</div>
+                        </div>
+                        <span class="user-role-badge ${user.role}">${user.role === 'admin' ? 'Admin' : user.role === 'editor' ? 'Editor' : 'User'}</span>
+                        <span class="user-password-hidden">••••••••</span>
+                        ${currentRole === 'admin' ? `
+                            <div class="user-actions">
+                                <button class="btn-remove" onclick="removeUser('${user.email}')" title="Remove User">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('')}
             </div>
-            <span class="user-role-badge ${user.role}">${user.role === 'admin' ? 'Admin' : user.role === 'editor' ? 'Editor' : 'User'}</span>
-            <span class="user-password-hidden">••••••••</span>
-            ${currentRole === 'admin' ? `
-                <div class="user-actions">
-                    <button class="btn-remove" onclick="removeUser('${user.email}')" title="Remove User">
-                        <i class='bx bx-trash'></i>
-                    </button>
-                </div>
-            ` : ''}
-        </div>
-    `).join('');
+        `;
+    }
+
+    // only show editors and regular users, drop any admins
+    html += renderGroup('Editors', groups.editor);
+    html += renderGroup('Users', groups.user);
+
+    container.innerHTML = html;
 }
+
+
 
 function removeUser(email) {
     if (confirm(`Are you sure you want to remove user: ${email}?`)) {
@@ -486,6 +599,29 @@ function removeUser(email) {
         renderUsers();
         showNotification('User removed successfully!', 'success');
     }
+}
+
+// Function to ban/unban a user (Admin only)
+function toggleUserBan(email) {
+    let users = getUsers();
+    const user = users.find(u => u.email === email);
+    
+    if (!user) {
+        showNotification('User not found!', 'error');
+        return;
+    }
+    
+    // Toggle banned status
+    if (user.banned === true) {
+        user.banned = false;
+        showNotification(`User ${email} has been unbanned!`, 'success');
+    } else {
+        user.banned = true;
+        showNotification(`User ${email} has been banned!`, 'success');
+    }
+    
+    localStorage.setItem('users', JSON.stringify(users));
+    renderUsers();
 }
 
 // ═════════════════════════════════════════════════════════════
@@ -544,42 +680,56 @@ function getTopGenre() {
 // ═════════════════════════════════════════════════════════════
 
 function navigateTo(section) {
+    // Remove active class from all nav items
     document.querySelectorAll('.admin-nav-item').forEach(item => {
         item.classList.remove('active');
     });
     
-    event.target.closest('.admin-nav-item').classList.add('active');
+    // Add active class to the clicked nav item (if event is available)
+    if (event && event.target) {
+        const clickedItem = event.target.closest('.admin-nav-item');
+        if (clickedItem) {
+            clickedItem.classList.add('active');
+        }
+    } else if (section) {
+        // If called programmatically, find the nav item that matches the section
+        const navItem = document.querySelector(`.admin-nav-item[onclick*="${section}"]`);
+        if (navItem) {
+            navItem.classList.add('active');
+        }
+    }
     
     const booksCol = document.getElementById('books-column');
-    const collabCol = document.getElementById('collaborations-column');
-    const statsCol = document.getElementById('stats-column');
+    const editorsCol = document.getElementById('editors-column');
     const usersCol = document.getElementById('users-column');
+    const statsCol = document.getElementById('stats-column');
+    const dashboardGrid = document.querySelector('.dashboard-grid');
     
+    // helper to set visibility
+    function showOnly(...cols) {
+        [booksCol, editorsCol, usersCol, statsCol].forEach(c => {
+            if (c) c.style.display = cols.includes(c) ? 'block' : 'none';
+        });
+    }
+
     if (section === 'books') {
-        booksCol.style.display = 'block';
-        collabCol.style.display = 'none';
-        statsCol.style.display = 'none';
-        if (usersCol) usersCol.style.display = 'none';
-    } else if (section === 'collaborations' || section === 'editors') {
-        booksCol.style.display = 'none';
-        collabCol.style.display = 'block';
-        statsCol.style.display = 'none';
-        if (usersCol) usersCol.style.display = 'none';
-    } else if (section === 'stats') {
-        booksCol.style.display = 'none';
-        collabCol.style.display = 'none';
-        statsCol.style.display = 'block';
-        if (usersCol) usersCol.style.display = 'none';
+        showOnly(booksCol);
+    } else if (section === 'editors') {
+        showOnly(editorsCol);
     } else if (section === 'users') {
-        booksCol.style.display = 'none';
-        collabCol.style.display = 'none';
-        statsCol.style.display = 'none';
-        if (usersCol) usersCol.style.display = 'block';
+        showOnly(usersCol);
+    } else if (section === 'stats') {
+        showOnly(statsCol);
     } else {
-        booksCol.style.display = 'block';
-        collabCol.style.display = 'block';
-        statsCol.style.display = 'block';
-        if (usersCol) usersCol.style.display = 'block';
+        // overview / default: show everything except accounts
+        showOnly(booksCol, editorsCol, statsCol);
+    }
+
+    // adjust layout width when single card visible
+    const visibleCount = [booksCol, editorsCol, usersCol, statsCol].filter(c => c && c.style.display === 'block').length;
+    if (dashboardGrid) {
+        if (visibleCount === 1) dashboardGrid.classList.add('single');
+        else dashboardGrid.classList.remove('single');
     }
 }
 
@@ -591,6 +741,8 @@ function logout() {
     if (confirm('Are you sure you want to logout?')) {
         localStorage.removeItem('user');
         localStorage.removeItem('userRole');
+        // Clear first login flag so next login is treated as first time
+        localStorage.removeItem('firstLogin');
         window.location.href = '../log&register/index.html';
     }
 }
