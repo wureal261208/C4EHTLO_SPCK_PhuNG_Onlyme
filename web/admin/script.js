@@ -24,6 +24,16 @@ function saveBooksToStorage() {
     localStorage.setItem('adminBooks', JSON.stringify(books));
 }
 
+// Initialize default books in localStorage if not exists
+function initializeBooks() {
+    const storedBooks = localStorage.getItem('adminBooks');
+    if (!storedBooks) {
+        localStorage.setItem('adminBooks', JSON.stringify(books));
+    } else {
+        books = JSON.parse(storedBooks);
+    }
+}
+
 // Load editors from localStorage if available, otherwise use default data
 let editors = JSON.parse(localStorage.getItem('adminEditors')) || [
     { id: 1, name: "John Smith", email: "john@example.com", status: "active", permissions: "manage" },
@@ -34,6 +44,16 @@ let editors = JSON.parse(localStorage.getItem('adminEditors')) || [
 // Function to save editors to localStorage
 function saveEditorsToStorage() {
     localStorage.setItem('adminEditors', JSON.stringify(editors));
+}
+
+// Initialize default editors in localStorage if not exists
+function initializeEditors() {
+    const storedEditors = localStorage.getItem('adminEditors');
+    if (!storedEditors) {
+        localStorage.setItem('adminEditors', JSON.stringify(editors));
+    } else {
+        editors = JSON.parse(storedEditors);
+    }
 }
 
 // Function to shorten email for display (e.g., bannanan@bookworm.com -> ban...@bookworm.com)
@@ -58,6 +78,10 @@ let currentUser = null;
 // ═════════════════════════════════════════════════════════════
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize localStorage with default data if not exists
+    initializeBooks();
+    initializeEditors();
+    
     checkAuth();
     loadData();
     // show overview by default
@@ -171,6 +195,12 @@ function loadData() {
 // ═════════════════════════════════════════════════════════════
 
 function switchRole(role) {
+    // Prevent non-admin users from switching to admin role
+    if (role === 'admin' && currentRole !== 'admin') {
+        showNotification('Only administrators can switch to admin role!', 'error');
+        return;
+    }
+    
     currentRole = role;
     updateRoleToggle();
     loadData();
@@ -198,11 +228,11 @@ function updateRoleToggle() {
     const editorBtn = document.getElementById('btn-editor');
     
     if (currentRole === 'admin') {
-        adminBtn.classList.add('active');
-        editorBtn.classList.remove('active');
+        if (adminBtn) adminBtn.classList.add('active');
+        if (editorBtn) editorBtn.classList.remove('active');
     } else {
-        editorBtn.classList.add('active');
-        adminBtn.classList.remove('active');
+        if (editorBtn) editorBtn.classList.add('active');
+        if (adminBtn) adminBtn.classList.remove('active');
     }
 }
 
@@ -451,6 +481,7 @@ function inviteEditor(event) {
     }
     
     editors.push(newEditor);
+    saveEditorsToStorage();
     renderEditors();
     renderUsers();
     updateStatsCards();
@@ -463,6 +494,7 @@ function toggleEditorStatus(editorId) {
     const editor = editors.find(e => e.id === editorId);
     if (editor) {
         editor.status = editor.status === 'active' ? 'inactive' : 'active';
+        saveEditorsToStorage();
         renderEditors();
         showNotification(`Editor ${editor.status === 'active' ? 'activated' : 'deactivated'}!`, 'success');
     }
@@ -477,6 +509,7 @@ function removeEditor(email) {
         
         // Also remove from editors array if exists
         editors = editors.filter(e => e.email !== email);
+        saveEditorsToStorage();
         
         renderEditors();
         renderUsers();
@@ -566,6 +599,29 @@ function removeUser(email) {
         renderUsers();
         showNotification('User removed successfully!', 'success');
     }
+}
+
+// Function to ban/unban a user (Admin only)
+function toggleUserBan(email) {
+    let users = getUsers();
+    const user = users.find(u => u.email === email);
+    
+    if (!user) {
+        showNotification('User not found!', 'error');
+        return;
+    }
+    
+    // Toggle banned status
+    if (user.banned === true) {
+        user.banned = false;
+        showNotification(`User ${email} has been unbanned!`, 'success');
+    } else {
+        user.banned = true;
+        showNotification(`User ${email} has been banned!`, 'success');
+    }
+    
+    localStorage.setItem('users', JSON.stringify(users));
+    renderUsers();
 }
 
 // ═════════════════════════════════════════════════════════════
