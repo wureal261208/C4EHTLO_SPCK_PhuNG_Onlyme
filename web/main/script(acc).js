@@ -8,9 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Render books to the grid
     renderBooks(publishedBooks);
-
-    // attach listeners to any card (static or newly rendered)
-    setupCardHandlers('../detail/index(acc).html');
     
     if (categoryFilter && itemsGrid) {
         categoryFilter.addEventListener('change', function() {
@@ -29,36 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-// generic helper to wire any .item-card elements to navigate to the given detail page
-function setupCardHandlers(detailPage) {
-    document.querySelectorAll('.item-card').forEach(card => {
-        if (card.dataset.wired === 'true') return;
-        card.dataset.wired = 'true';
-        card.addEventListener('click', () => {
-            const imgEl = card.querySelector('img');
-            const imgSrc = imgEl ? imgEl.src : '';
-            const titleEl = card.querySelector('h3');
-            const authorEl = card.querySelector('.author');
-
-            const book = {
-                id: card.dataset.id || Date.now(),
-                title: titleEl ? titleEl.textContent : '',
-                author: authorEl ? authorEl.textContent : '',
-                image: imgSrc,
-                genre: card.dataset.category || '',
-                pages: parseInt(card.dataset.pages) || 0,
-                status: 'published'
-            };
-            localStorage.setItem('currentBook', JSON.stringify(book));
-            let target = detailPage;
-            if (imgSrc && isValidUrl(imgSrc)) {
-                target += '?cover=' + encodeURIComponent(imgSrc);
-            }
-            window.location.href = target;
-        });
-    });
-}
 
 // Function to load published books from localStorage
 function loadPublishedBooks() {
@@ -90,7 +57,7 @@ function renderBooks(books) {
     }
     
     itemsGrid.innerHTML = books.map(book => `
-        <div class="item-card" data-category="${book.genre.toLowerCase()}" data-rating="5" data-year="${new Date().getFullYear()}" onclick="viewBookDetail(${book.id})">
+        <div class="item-card" data-category="${book.genre.toLowerCase()}" data-rating="5" data-year="${new Date().getFullYear()}">
             <div class="card-image">
                 <img src="${book.image || defaultImage}" alt="${book.title}">
             </div>
@@ -112,33 +79,4 @@ function renderBooks(books) {
             </div>
         </div>
     `).join('');
-}
-
-// helper for validating URLs
-function isValidUrl(url) {
-    try {
-        new URL(url);
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-// Function to navigate to detail page with book data
-function viewBookDetail(bookId) {
-    const storedBooks = localStorage.getItem('adminBooks');
-    if (storedBooks) {
-        const books = JSON.parse(storedBooks);
-        const book = books.find(b => b.id === bookId);
-        if (book) {
-            // Store the book data in localStorage for the detail page
-            localStorage.setItem('currentBook', JSON.stringify(book));
-            // Navigate to detail page, include valid cover URL
-            let target = '../detail/index(acc).html';
-            if (book.image && isValidUrl(book.image)) {
-                target += '?cover=' + encodeURIComponent(book.image);
-            }
-            window.location.href = target;
-        }
-    }
 }

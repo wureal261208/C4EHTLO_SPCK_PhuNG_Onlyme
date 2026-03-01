@@ -51,61 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // simple data loader (would normally be async fetch)
     function loadBook() {
-        // First, try to get book data from localStorage (set by main page)
-        const storedBook = localStorage.getItem('currentBook');
-        
-        let title, author, status, views, rating, ratingCount, description, cover, chapters;
-        
-        function isValidUrl(url) {
-            try {
-                new URL(url);
-                return true;
-            } catch {
-                return false;
-            }
-        }
-
-        // give priority to any cover provided via query string
         const params = new URLSearchParams(window.location.search);
-        const overrideCover = params.get('cover');
-
-        if (storedBook) {
-            // Use data from localStorage
-            const book = JSON.parse(storedBook);
-            title = book.title || 'Book Title';
-            author = book.author || 'Author Name';
-            status = book.status || 'Completed';
-            views = book.views || '12.3k';
-            rating = '★★★★★';
-            ratingCount = '(NEW)';
-            description = book.description || '';
-            chapters = book.pages || 200;
-            if (overrideCover && isValidUrl(overrideCover)) {
-                cover = overrideCover;
-            } else if (book.image) {
-                if (isValidUrl(book.image)) {
-                    cover = book.image;
-                } else {
-                    console.warn('Stored cover URL is invalid, falling back to default:', book.image);
-                    cover = '';
-                }
-            } else {
-                cover = '';
-            }
-        } else {
-            // Fall back to URL query parameters
-            const params = new URLSearchParams(window.location.search);
-            title = params.get('title') || 'Book Title';
-            author = params.get('author') || 'Author Name';
-            status = params.get('status') || 'Completed';
-            views = params.get('views') || '12.3k';
-            rating = params.get('rating') || '★★★★★';
-            ratingCount = params.get('ratingCount') || '(1234 reviews)';
-            description = params.get('desc') || '';
-            // if we reach here without localStorage data use query params (including cover override)
-            cover = overrideCover || params.get('cover');
-            chapters = parseInt(params.get('chapters')) || 200;
-        }
+        const title = params.get('title') || 'Book Title';
+        const author = params.get('author') || 'Author Name';
+        const status = params.get('status') || 'Completed';
+        const views = params.get('views') || '12.3k';
+        const rating = params.get('rating') || '★★★★★';
+        const ratingCount = params.get('ratingCount') || '(1234 reviews)';
+        const description = params.get('desc') || '';
+        const cover = params.get('cover');
+        const chapters = parseInt(params.get('chapters')) || 200;
 
         document.getElementById('book-title').textContent = title;
         document.getElementById('book-author').textContent = `by ${author}`;
@@ -115,9 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('book-rating-count').textContent = ratingCount;
         document.getElementById('book-description').textContent = description ||
             'No summary provided.';
-        // Set book cover image - use book image or fallback to default
-        const defaultCover = "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80";
-        document.getElementById('book-cover').src = cover || defaultCover;
+        if (cover) {
+            document.getElementById('book-cover').src = cover;
+        }
         return chapters;
     }
 
