@@ -12,7 +12,7 @@ function loadProgress() {
 
     if (currentChapter > 0) {
         continueBtn.classList.remove("hidden");
-        continueBtn.href = `../reading/index(read-novel).html?book=${bookId}&chapter=${currentChapter}`;
+        continueBtn.href = `../detail/Story.html?book=${bookId}&chapter=${currentChapter}`;
     }
 
     const percent = Math.floor((currentChapter / totalChapters) * 100);
@@ -31,7 +31,7 @@ function renderChapters() {
     for (let i = 1; i <= totalChapters; i++) {
         const li = document.createElement("li");
         li.innerHTML = `
-            <a href="../reading/index(read-novel).html?book=${bookId}&chapter=${i}"
+            <a href="../reader/index.html?book=${bookId}&chapter=${i}"
             class="block py-1 hover:text-blue-500">
             Chapter ${i}
             </a>
@@ -60,6 +60,6 @@ chapterList.addEventListener("click", (e) => {
 chapterList.addEventListener("click", (e) => {
     if (e.target.tagName === "A") {
         const chapterNumber = parseInt(e.target.textContent.split(" ")[1]);
-        window.location.href = `../reading/index(read-img).html?book=${bookId}&chapter=${chapterNumber}`;
+        window.location.href = `../detail/Story.html?book=${bookId}&chapter=${chapterNumber}`;
     }
 });
