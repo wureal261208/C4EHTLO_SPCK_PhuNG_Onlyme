@@ -24,21 +24,36 @@ function saveBooksToStorage() {
     localStorage.setItem('adminBooks', JSON.stringify(books));
 }
 
-<<<<<<< HEAD
+// Initialize default books in localStorage if not exists
+function initializeBooks() {
+    const storedBooks = localStorage.getItem('adminBooks');
+    if (!storedBooks) {
+        localStorage.setItem('adminBooks', JSON.stringify(books));
+    } else {
+        books = JSON.parse(storedBooks);
+    }
+}
+
 // Load editors from localStorage if available, otherwise use default data
 let editors = JSON.parse(localStorage.getItem('adminEditors')) || [
-=======
-let editors = [
->>>>>>> parent of fc17dce (conflict?)
     { id: 1, name: "John Smith", email: "john@example.com", status: "active", permissions: "manage" },
     { id: 2, name: "Emily Davis", email: "emily@example.com", status: "active", permissions: "edit" },
     { id: 3, name: "Michael Brown", email: "michael@example.com", status: "inactive", permissions: "edit" }
 ];
 
-<<<<<<< HEAD
 // Function to save editors to localStorage
 function saveEditorsToStorage() {
     localStorage.setItem('adminEditors', JSON.stringify(editors));
+}
+
+// Initialize default editors in localStorage if not exists
+function initializeEditors() {
+    const storedEditors = localStorage.getItem('adminEditors');
+    if (!storedEditors) {
+        localStorage.setItem('adminEditors', JSON.stringify(editors));
+    } else {
+        editors = JSON.parse(storedEditors);
+    }
 }
 
 // Function to shorten email for display (e.g., bannanan@bookworm.com -> ban...@bookworm.com)
@@ -452,7 +467,6 @@ function toggleEditorStatus(editorId) {
     }
 }
 
-<<<<<<< HEAD
 function removeEditor(email) {
     if (confirm('Are you sure you want to remove this editor: ' + email + '?')) {
         // Remove from users list in localStorage
@@ -462,12 +476,8 @@ function removeEditor(email) {
         
         // Also remove from editors array if exists
         editors = editors.filter(e => e.email !== email);
+        saveEditorsToStorage();
         
-=======
-function removeEditor(editorId) {
-    if (confirm('Are you sure you want to remove this editor?')) {
-        editors = editors.filter(e => e.id !== editorId);
->>>>>>> parent of fc17dce (conflict?)
         renderEditors();
         updateStatsCards();
         showNotification('Editor removed successfully!', 'success');

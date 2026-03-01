@@ -206,11 +206,13 @@ loginForm.btn.addEventListener("click", (e) => {
         return;
     }
 
-<<<<<<< HEAD
+    // Check if user is banned
+    if (user.banned === true) {
+        showError(loginForm.errEmail, "Your account has been banned. Please contact the administrator.");
+        return;
+    }
+
     // Save current user to localStorage
-=======
-// Save current user to localStorage
->>>>>>> parent of fc17dce (conflict?)
     localStorage.setItem('currentUser', JSON.stringify(user));
     localStorage.setItem('user', user.email);
     localStorage.setItem('userRole', user.role);
