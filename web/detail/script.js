@@ -138,7 +138,43 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = start; i <= end; i++) {
             const li = document.createElement('li');
             const a = document.createElement('a');
-            a.href = `#chapter${i}`;
+function renderChapters() {
+    if (!chapList) return [];
+    chapList.innerHTML = '';
+
+    const start = currentPage * pageSize + 1;
+    const end = Math.min(totalChapters, start + pageSize - 1);
+
+    const links = [];
+
+    for (let i = start; i <= end; i++) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+
+        // Điều hướng theo chapter
+        if (i === 1) {
+            a.href = "../reading/index(read-img).html";
+        } else if (i === 2) {
+            a.href = "../reading/index(read-novel).html";
+        } else {
+            a.href = `../reading/index(read-novel).html?chapter=${i}`;
+        }
+
+        a.textContent = `Chapter ${i}`;
+        a.className = 'text-blue-600 hover:underline focus:outline-none focus:ring';
+
+        li.appendChild(a);
+        chapList.appendChild(li);
+        links.push(a);
+    }
+
+    if (btnPrev) btnPrev.disabled = currentPage === 0;
+    if (btnNext) btnNext.disabled = end === totalChapters;
+
+    return links;
+}
+
+            a.href = `../reading/index(read-img).html?chapter=${i}`;
             a.textContent = `Chapter ${i}`;
             a.className = 'text-blue-600 hover:underline focus:outline-none focus:ring';
             a.setAttribute('tabindex', '0');
@@ -190,3 +226,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // set initial focus for accessibility
     focusFirstChapter();
 });
+
+
