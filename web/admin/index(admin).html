@@ -59,6 +59,14 @@
             <!-- hamburger visible on smaller screens to toggle sidebar -->
             <i class='bx bx-menu sidebar-toggle' onclick="toggleSidebar()" title="Menu"></i>
             <h1><i class='bx bx-dashboard'></i> Admin Dashboard</h1>
+            <div class="role-toggle">
+                <button id="btn-admin" class="active" onclick="switchRole('admin')">
+                    <i class='bx bx-shield'></i> Admin
+                </button>
+                <button id="btn-editor" onclick="switchRole('editor')">
+                    <i class='bx bx-user'></i> Editor
+                </button>
+            </div>
         </header>
 
         <section class="stats-grid">

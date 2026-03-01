@@ -254,12 +254,6 @@ function performLogin() {
         return;
     }
 
-    // Check if user is banned
-    if (user.banned === true) {
-        showError(loginForm.errEmail, "Your account has been banned. Please contact the administrator.");
-        return;
-    }
-
     // Save current user to localStorage
     localStorage.setItem('currentUser', JSON.stringify(user));
     localStorage.setItem('user', user.email);
