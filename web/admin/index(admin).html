@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BookWorm</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside class="admin-sidebar">
+        <div class="admin-logo">
+            <img src="/img/logo.jpg" alt="BookWorm">
+            <span>BookWorm</span>
+        </div>
+        
+        <nav class="admin-nav">
+            <a href="#" class="admin-nav-item active" onclick="navigateTo('overview')">
+                <i class='bx bx-grid-alt'></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="admin-nav-item" onclick="navigateTo('books')">
+                <i class='bx bx-book'></i>
+                <span>Books</span>
+            </a>
+            <a href="#" class="admin-nav-item" onclick="navigateTo('editors')">
+                <i class='bx bx-group'></i>
+                <span>Editors</span>
+            </a>
+            <a href="#" class="admin-nav-item" onclick="navigateTo('stats')">
+                <i class='bx bx-bar-chart-alt-2'></i>
+                <span>Statistics</span>
+            </a>
+            <a href="#" class="admin-nav-item" onclick="navigateTo('users')">
+                <i class='bx bx-user-circle'></i>
+                <span>Accounts</span>
+            </a>
+        </nav>
+
+        <div class="admin-user-info">
+            <img id="admin-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Admin">
+            <div class="user-details">
+                <div class="user-name" id="user-name">Admin User</div>
+                <div class="user-role" id="user-role">Administrator</div>
+            </div>
+            <!-- home link removed as requested -->
+            <i class='bx bx-log-out admin-logout' title="Logout" onclick="logout()"></i>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <!-- hamburger visible on smaller screens to toggle sidebar -->
+            <i class='bx bx-menu sidebar-toggle' onclick="toggleSidebar()" title="Menu"></i>
+            <h1><i class='bx bx-dashboard'></i> Admin Dashboard</h1>
+            <div class="role-toggle">
+                <button id="btn-admin" class="active" onclick="switchRole('admin')">
+                    <i class='bx bx-shield'></i> Admin
+                </button>
+                <button id="btn-editor" onclick="switchRole('editor')">
+                    <i class='bx bx-user'></i> Editor
+                </button>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <i class='bx bx-book'></i>
+                <div class="stat-number" id="stat-total-books">0</div>
+                <div class="stat-label">Total Books</div>
+            </div>
+            <div class="stat-card">
+                <i class='bx bx-book-open'></i>
+                <div class="stat-number" id="stat-published">0</div>
+                <div class="stat-label">Published</div>
+            </div>
+            <div class="stat-card">
+                <i class='bx bx-edit'></i>
+                <div class="stat-number" id="stat-drafts">0</div>
+                <div class="stat-label">Drafts</div>
+            </div>
+            <div class="stat-card">
+                <i class='bx bx-group'></i>
+                <div class="stat-number" id="stat-editors">0</div>
+                <div class="stat-label">Editors</div>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <div class="dashboard-card" id="books-column">
+                <h3><i class='bx bx-book'></i> Books Management</h3>
+                <button class="add-btn" onclick="openModal('book')">
+                    <i class='bx bx-plus'></i> Add New Book
+                </button>
+                <div class="books-list" id="books-list">
+                </div>
+            </div>
+
+            <div class="dashboard-card" id="editors-column">
+                <h3><i class='bx bx-user'></i> Editors (Users with Editor Role)</h3>
+                <button class="add-btn" onclick="openModal('editor')">
+                    <i class='bx bx-user-plus'></i> Add Editor
+                </button>
+                <div class="users-list" id="editors-list">
+                </div>
+            </div>
+
+            <div class="dashboard-card" id="users-column" style="display: none;">
+                <h3><i class='bx bx-user-circle'></i> Accounts Management</h3>
+                    <div class="users-list" id="users-list">
+                </div>
+            </div>
+
+            <div class="dashboard-card" id="stats-column">
+                <h3><i class='bx bx-bar-chart-alt-2'></i> Statistics Overview</h3>
+                <div class="stats-content" id="stats-content">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="book-modal">
+        <div class="modal">
+            <h2><i class='bx bx-book-add'></i> Add New Book</h2>
+            <form class="modal-form" onsubmit="addBook(event)">
+                <input type="text" id="book-title" placeholder="Book Title" required>
+                <input type="text" id="book-author" placeholder="Author" required>
+                <input type="url" id="book-image" placeholder="Cover Image URL (optional)">
+                <input type="text" id="book-genre" placeholder="Genre" required>
+                <input type="number" id="book-pages" placeholder="Number of Pages" required>
+                <select id="book-status">
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                </select>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal('book')">Cancel</button>
+                    <button type="submit" class="btn-save">Add Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editor-modal">
+        <div class="modal">
+            <h2><i class='bx bx-user-plus'></i> Invite New Editor</h2>
+            <form class="modal-form" onsubmit="inviteEditor(event)">
+                <input type="text" id="editor-name" placeholder="Editor Name" required>
+                <input type="email" id="editor-email" placeholder="Editor Email" required>
+                <select id="editor-permissions">
+                    <option value="edit">Can Edit Books</option>
+                    <option value="manage">Can Manage Books & Editors</option>
+                </select>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal('editor')">Cancel</button>
+                    <button type="submit" class="btn-save">Send Invite</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../script/lazyLoad.js" defer></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
