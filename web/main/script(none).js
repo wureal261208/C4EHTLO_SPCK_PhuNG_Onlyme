@@ -103,6 +103,7 @@ function renderBooks(books) {
                 <div class="card-meta">
                     <span><i class='bx bx-book-open'></i> ${book.pages} pages</span>
                     <span><i class='bx bx-calendar'></i> ${new Date().getFullYear()}</span>
+                    <span><i class='bx bx-user'></i> ${book.views || 0}</span>
                 </div>
                 <div class="card-footer">
                     <span class="category-tag">${book.genre}</span>

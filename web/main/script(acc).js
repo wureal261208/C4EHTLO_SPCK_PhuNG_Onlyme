@@ -101,7 +101,7 @@ function renderBooks(books) {
                 <div class="card-meta">
                     <span><i class='bx bx-book-open'></i> ${book.pages} pages</span>
                     <span><i class='bx bx-calendar'></i> ${new Date().getFullYear()}</span>
-                    <span><i class='bx bx-eye'></i> ${book.views || 12} views</span>
+                    <span><i class='bx bx-eye'></i> ${book.views || 0 } views</span>
                 </div>
                 <div class="card-footer">
                     <span class="category-tag">${book.genre}</span>
@@ -140,6 +140,19 @@ function viewBookDetail(bookId) {
                 target += '?cover=' + encodeURIComponent(book.image);
             }
             window.location.href = target;
+        }
+    }
+}
+
+// Function to update views count for a book
+function updateViews(bookId) {
+    const storedBooks = localStorage.getItem('adminBooks');
+    if (storedBooks) {
+        const books = JSON.parse(storedBooks);
+        const book = books.find(b => b.id === bookId);
+        if (book) {
+            book.views = (book.views || 0) + 1;
+            localStorage.setItem('adminBooks', JSON.stringify(books));
         }
     }
 }
