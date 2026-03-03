@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - BookWorm</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .forgot-container {
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .forgot-container .logo {
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-container .logo img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+        }
+
+        .forgot-container h2 {
+            color: #1a1a1a;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .forgot-container .subtitle {
+            color: #666666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .forgot-form .input-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .forgot-form .input-group label {
+            display: block;
+            color: #333333;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+
+        .forgot-form .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .forgot-form .input-group input:focus {
+            border-color: #333333;
+            background: #ffffff;
+        }
+
+        .forgot-form .input-group input::placeholder {
+            color: #888888;
+        }
+
+        .forgot-form button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #333333, #666666);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .forgot-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(51, 51, 51, 0.3);
+        }
+
+        .back-link {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            color: #666666;
+            font-size: 0.9rem;
+        }
+
+        .back-link a {
+            color: #333333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-link a:hover {
+            color: #000000;
+            text-decoration: underline;
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            display: block;
+        }
+
+        /* New Password Section (hidden by default) */
+        .new-password-section {
+            display: none;
+        }
+
+        .new-password-section.active {
+            display: block;
+        }
+
+        .verification-section {
+            display: block;
+        }
+
+        .verification-section.hidden {
+            display: none;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .forgot-form button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="forgot-container">
+        <div class="logo">
+            <img src="/img/logo.jpg" alt="BookWorm">
+        </div>
+        
+        <!-- Verification Section -->
+        <div class="verification-section" id="verificationSection">
+            <h2>Reset Your Password</h2>
+            <p class="subtitle">Enter your email address and we'll send you a verification code to reset your password.</p>
+            
+            <div class="message" id="message"></div>
+            
+            <form class="forgot-form" id="forgotForm" onsubmit="sendVerification(event)">
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <button type="submit" id="submitBtn">
+                    <span id="btnText">Send Verification Code</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- New Password Section -->
+        <div class="new-password-section" id="newPasswordSection">
+            <h2>Enter New Password</h2>
+            <p class="subtitle">We've sent a verification code to your email. Enter the code and your new password.</p>
+            
+            <div class="message" id="message2"></div>
+            
+            <form class="forgot-form" id="resetForm" onsubmit="resetPassword(event)">
+                <div class="input-group">
+                    <label for="verificationCode">Verification Code</label>
+                    <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" required>
+                </div>
+                <div class="input-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password" required minlength="6">
+                </div>
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm new password" required minlength="6">
+                </div>
+                <button type="submit" id="resetBtn">
+                    <span id="resetBtnText">Reset Password</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="back-link">
+            <i class='bx bx-arrow-back'></i>
+            <a href="index.html">Back to Login</a>
+        </div>
+    </div>
+
+    <script>
+        // Store verification code and email
+        let storedCode = '';
+        let userEmail = '';
+
+        // Function to generate a 6-digit verification code
+        function generateCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Function to show message
+        function showMessage(elementId, text, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = text;
+            element.className = 'message ' + type;
+        }
+
+        // Function to hide message
+        function hideMessage(elementId) {
+            const element = document.getElementById(elementId);
+            element.className = 'message';
+            element.style.display = 'none';
+        }
+
+        // Send verification code
+        function sendVerification(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            
+            // Check if user exists
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+            
+            if (!user) {
+                showMessage('message', 'This email is not registered. Please check your email or create a new account.', 'error');
+                return;
+            }
+            
+            // Show loading
+            submitBtn.disabled = true;
+            btnText.innerHTML = '<span class="spinner"></span>Sending...';
+            
+            // Simulate sending email (in real app, this would call a backend API)
+            setTimeout(() => {
+                // Generate verification code
+                storedCode = generateCode();
+                userEmail = email;
+                
+                // Store code with timestamp (valid for 10 minutes)
+                localStorage.setItem('verificationCode', JSON.stringify({
+                    code: storedCode,
+                    email: email,
+                    timestamp: Date.now(),
+                    expiresIn: 10 * 60 * 1000 // 10 minutes
+                }));
+                
+                // Show success message (in real app, code would be sent via email)
+                showMessage('message', 'Verification code sent! (For demo: your code is ' + storedCode + ')', 'success');
+                
+                // Switch to new password section after delay
+                setTimeout(() => {
+                    document.getElementById('verificationSection').classList.add('hidden');
+                    document.getElementById('newPasswordSection').classList.add('active');
+                }, 1500);
+                
+                submitBtn.disabled = false;
+                btnText.textContent = 'Send Verification Code';
+            }, 1500);
+        }
+
+        // Reset password
+        function resetPassword(event) {
+            event.preventDefault();
+            
+            const code = document.getElementById('verificationCode').value.trim();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const resetBtn = document.getElementById('resetBtn');
+            const resetBtnText = document.getElementById('resetBtnText');
+            
+            // Get stored verification data
+            const storedData = JSON.parse(localStorage.getItem('verificationCode'));
+            
+            if (!storedData) {
+                showMessage('message2', 'Verification session expired. Please request a new code.', 'error');
+                return;
+            }
+            
+            // Check if code is expired
+            if (Date.now() - storedData.timestamp > storedData.expiresIn) {
+                showMessage('message2', 'Verification code has expired. Please request a new one.', 'error');
+                localStorage.removeItem('verificationCode');
+                return;
+            }
+            
+            // Verify code
+            if (code !== storedData.code) {
+                showMessage('message2', 'Invalid verification code. Please try again.', 'error');
+                return;
+            }
+            
+            // Check if passwords match
+            if (newPassword !== confirmPassword) {
+                showMessage('message2', 'Passwords do not match. Please try again.', 'error');
+                return;
+            }
+            
+            // Check password length
+            if (newPassword.length < 6) {
+                showMessage('message2', 'Password must be at least 6 characters long.', 'error');
+                return;
+            }
+            
+            // Show loading
+            resetBtn.disabled = true;
+            resetBtnText.innerHTML = '<span class="spinner"></span>Resetting...';
+            
+            // Update password in localStorage
+            setTimeout(() => {
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const userIndex = users.findIndex(u => u.email.toLowerCase() === storedData.email.toLowerCase());
+                
+                if (userIndex !== -1) {
+                    users[userIndex].password = newPassword;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Clear verification data
+                    localStorage.removeItem('verificationCode');
+                    
+                    showMessage('message2', 'Password reset successfully! Redirecting to login...', 'success');
+                    
+                    // Redirect to login after delay
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    showMessage('message2', 'User not found. Please try again.', 'error');
+                    resetBtn.disabled = false;
+                    resetBtnText.textContent = 'Reset Password';
+                }
+            }, 1500);
+        }
+
+        // Check if there's an existing verification session
+        window.onload = function() {
+            const storedData = JSON.parse(localStorage.getItem('verificationCode'));
+            
+            if (storedData) {
+                // Check if code is still valid
+                if (Date.now() - storedData.timestamp < storedData.expiresIn) {
+                    userEmail = storedData.email;
+                    document.getElementById('verificationSection').classList.add('hidden');
+                    document.getElementById('newPasswordSection').classList.add('active');
+                    showMessage('message2', 'Enter the verification code sent to your email.', 'success');
+                } else {
+                    localStorage.removeItem('verificationCode');
+                }
+            }
+        };
+    </script>
+</body>
+</html>
+

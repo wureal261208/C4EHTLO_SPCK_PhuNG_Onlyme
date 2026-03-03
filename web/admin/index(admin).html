@@ -29,17 +29,13 @@
                 <i class='bx bx-book'></i>
                 <span>Books</span>
             </a>
-            <a href="#" class="admin-nav-item" onclick="navigateTo('editors')">
-                <i class='bx bx-group'></i>
-                <span>Editors</span>
-            </a>
             <a href="#" class="admin-nav-item" onclick="navigateTo('stats')">
                 <i class='bx bx-bar-chart-alt-2'></i>
                 <span>Statistics</span>
             </a>
             <a href="#" class="admin-nav-item" onclick="navigateTo('users')">
                 <i class='bx bx-user-circle'></i>
-                <span>Accounts</span>
+                <span>Users</span>
             </a>
         </nav>
 
@@ -59,14 +55,6 @@
             <!-- hamburger visible on smaller screens to toggle sidebar -->
             <i class='bx bx-menu sidebar-toggle' onclick="toggleSidebar()" title="Menu"></i>
             <h1><i class='bx bx-dashboard'></i> Admin Dashboard</h1>
-            <div class="role-toggle">
-                <button id="btn-admin" class="active" onclick="switchRole('admin')">
-                    <i class='bx bx-shield'></i> Admin
-                </button>
-                <button id="btn-editor" onclick="switchRole('editor')">
-                    <i class='bx bx-user'></i> Editor
-                </button>
-            </div>
         </header>
 
         <section class="stats-grid">
@@ -87,8 +75,8 @@
             </div>
             <div class="stat-card">
                 <i class='bx bx-group'></i>
-                <div class="stat-number" id="stat-editors">0</div>
-                <div class="stat-label">Editors</div>
+                <div class="stat-number" id="stat-users">0</div>
+                <div class="stat-label">Users</div>
             </div>
         </section>
 
@@ -102,17 +90,8 @@
                 </div>
             </div>
 
-            <div class="dashboard-card" id="editors-column">
-                <h3><i class='bx bx-user'></i> Editors (Users with Editor Role)</h3>
-                <button class="add-btn" onclick="openModal('editor')">
-                    <i class='bx bx-user-plus'></i> Add Editor
-                </button>
-                <div class="users-list" id="editors-list">
-                </div>
-            </div>
-
             <div class="dashboard-card" id="users-column" style="display: none;">
-                <h3><i class='bx bx-user-circle'></i> Accounts Management</h3>
+                <h3><i class='bx bx-user-circle'></i> Users Management</h3>
                     <div class="users-list" id="users-list">
                 </div>
             </div>
@@ -138,27 +117,26 @@
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
                 </select>
+                
+                <!-- Chapters Section -->
+                <div class="chapters-section">
+                    <h4><i class='bx bx-list-ul'></i> Chapters</h4>
+                    <div id="chapters-container">
+                        <div class="chapter-input-row">
+                            <input type="text" class="chapter-title" placeholder="Chapter Title" required>
+                            <button type="button" class="btn-remove-chapter" onclick="removeChapterRow(this)">
+                                <i class='bx bx-trash'></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add-chapter" onclick="addChapterRow()">
+                        <i class='bx bx-plus'></i> Add Chapter
+                    </button>
+                </div>
+                
                 <div class="modal-buttons">
                     <button type="button" class="btn-cancel" onclick="closeModal('book')">Cancel</button>
                     <button type="submit" class="btn-save">Add Book</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="editor-modal">
-        <div class="modal">
-            <h2><i class='bx bx-user-plus'></i> Invite New Editor</h2>
-            <form class="modal-form" onsubmit="inviteEditor(event)">
-                <input type="text" id="editor-name" placeholder="Editor Name" required>
-                <input type="email" id="editor-email" placeholder="Editor Email" required>
-                <select id="editor-permissions">
-                    <option value="edit">Can Edit Books</option>
-                    <option value="manage">Can Manage Books & Editors</option>
-                </select>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel" onclick="closeModal('editor')">Cancel</button>
-                    <button type="submit" class="btn-save">Send Invite</button>
                 </div>
             </form>
         </div>

@@ -8,11 +8,6 @@ function initUsersDB() {
                 role: 'admin'
             },
             {
-                email: 'editor@bookworm.com',
-                password: 'Editor123',
-                role: 'editor'
-            },
-            {
                 email: 'user@bookworm.com',
                 password: 'User123',
                 role: 'user'
@@ -261,7 +256,7 @@ function performLogin() {
 
     // Redirect based on role
     alert("Login successful! Welcome back!");
-    if (user.role === 'admin' || user.role === 'editor') {
+    if (user.role === 'admin') {
         window.location.href = "../admin/index(admin).html";
     } else {
         window.location.href = "../main/index(acc).html";

@@ -1,19 +1,22 @@
-/* Admin Dashboard Styles - Using existing color palette */
+/* Admin Dashboard Styles - Black, White, Grey Theme */
 :root {
-    --primary-color: #A1C2BD;
-    --secondary-color: #708993;
+    /* Black, White, Grey Color Palette */
+    --primary-color: #333333;
+    --secondary-color: #666666;
     --black: #000000;
     --white: #ffffff;
-    --gray: #efefef;
-    --gray-2: #757575;
-    --text: #333333;
-    --color-1: #19183B;
-    --color-2: #708993;
-    --color-3: #A1C2BD;
-    --color-4: #E7F2EF;
-    --accent: #A1C2BD;
-    --muted: #708993;
-    --bg: #E7F2EF;
+    --gray: #e0e0e0;
+    --gray-2: #888888;
+    --gray-3: #f5f5f5;
+    --gray-4: #cccccc;
+    --text: #1a1a1a;
+    --color-1: #1a1a1a;
+    --color-2: #4a4a4a;
+    --color-3: #808080;
+    --color-4: #f0f0f0;
+    --accent: #333333;
+    --muted: #666666;
+    --bg: #f5f5f5;
 }
 
 * {
@@ -36,8 +39,8 @@ body {
     top: 0;
     width: 260px;
     height: 100vh;
-    background: linear-gradient(180deg, var(--color-1) 0%, rgba(25, 24, 59, 0.85) 100%);
-    border-right: 2px solid var(--color-3);
+    background: linear-gradient(180deg, #1a1a1a 0%, #333333 100%);
+    border-right: 2px solid #808080;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -222,6 +225,11 @@ body {
     margin-bottom: 30px;
 }
 
+/* make books section wider by spanning two columns */
+#books-column {
+    grid-column: span 2;
+}
+
 .dashboard-grid.single {
     grid-template-columns: 1fr;
     max-width: 900px;
@@ -234,6 +242,10 @@ body {
     padding: 25px;
     box-shadow: 0 4px 15px rgba(112, 137, 147, 0.15);
     border: 1px solid rgba(161, 194, 189, 0.3);
+    /* prevent internal content from creating horizontal scroll */
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .dashboard-card h3 {
@@ -262,12 +274,12 @@ body {
 }
 
 .stat-card {
-    background: linear-gradient(135deg, var(--color-3), var(--color-2));
+    background: linear-gradient(135deg, #333333, #666666);
     border-radius: 15px;
     padding: 25px;
     color: var(--white);
     text-align: center;
-    box-shadow: 0 4px 15px rgba(112, 137, 147, 0.25);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .stat-card i {
@@ -291,6 +303,8 @@ body {
 .books-list {
     max-height: 500px;
     overflow-y: auto;
+    overflow-x: hidden; /* hide sideways scroll when items shift */
+    box-sizing: border-box;
 }
 
 .book-item {
@@ -303,6 +317,8 @@ body {
     margin-bottom: 12px;
     transition: all 0.3s ease;
     flex-wrap: wrap;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .book-item:hover {
@@ -378,12 +394,12 @@ body {
 }
 
 .book-actions .btn-publish {
-    background: var(--color-3);
-    color: var(--color-1);
+    background: #808080;
+    color: var(--white);
 }
 
 .book-actions .btn-publish:hover {
-    background: var(--color-2);
+    background: #333333;
     color: var(--white);
 }
 
@@ -508,7 +524,7 @@ body {
 .add-btn {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(90deg, var(--color-2), var(--color-3));
+    background: linear-gradient(90deg, #333333, #666666);
     color: var(--white);
     border: none;
     border-radius: 10px;
@@ -525,7 +541,7 @@ body {
 
 .add-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(112, 137, 147, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Modal */
@@ -556,7 +572,7 @@ body {
     border-radius: 15px;
     padding: 30px;
     width: 100%;
-    max-width: 500px;
+    max-width: 550px;
     transform: scale(0.8);
     transition: all 0.3s ease;
     max-height: 90vh;
@@ -603,6 +619,83 @@ body {
     border-color: var(--color-2);
 }
 
+/* Chapters Section */
+.chapters-section {
+    border: 2px solid var(--color-3);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 5px;
+}
+
+.chapters-section h4 {
+    color: var(--color-1);
+    font-size: 1rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chapters-section h4 i {
+    color: var(--color-2);
+}
+
+#chapters-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.chapter-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.chapter-input-row input {
+    flex: 1;
+}
+
+.btn-remove-chapter {
+    padding: 8px 12px;
+    background: #ff6b6b;
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-remove-chapter:hover {
+    background: #e74c3c;
+}
+
+.btn-add-chapter {
+    width: 100%;
+    padding: 10px;
+    background: var(--color-2);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-add-chapter:hover {
+    background: var(--color-1);
+}
+
 .modal-buttons {
     display: flex;
     gap: 12px;
@@ -631,12 +724,12 @@ body {
 }
 
 .modal-buttons .btn-save {
-    background: var(--color-3);
-    color: var(--color-1);
+    background: #333333;
+    color: var(--white);
 }
 
 .modal-buttons .btn-save:hover {
-    background: var(--color-2);
+    background: #1a1a1a;
     color: var(--white);
 }
 

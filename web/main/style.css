@@ -1,17 +1,17 @@
 :root {
-    /* Exact Color Palette from User */
-    --primary-color: #A1C2BD;
-    --secondary-color: #708993;
+    /* Exact Color Palette - Black, White, Grey */
+    --primary-color: #333333;
+    --secondary-color: #666666;
     --black: #000000;
     --white: #ffffff;
-    --gray: #efefef;
-    --gray-2: #757575;
-    --text: #333333;
+    --gray: #e0e0e0;
+    --gray-2: #888888;
+    --text: #1a1a1a;
     
     /* Additional colors */
-    --bg: #E7F2EF;
-    --accent: #A1C2BD;
-    --muted: #708993;
+    --bg: #f5f5f5;
+    --accent: #333333;
+    --muted: #666666;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -29,6 +29,8 @@ body {
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* hide any horizontal overflow caused by hover transforms */
+    overflow-x: hidden;
 }
 
 /* Navbar Category Dropdown */
@@ -58,9 +60,9 @@ body {
 
 /* Navbar - SOLID BACKGROUND */
 .custom-navbar {
-    background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%) !important;
-    border-bottom: 3px solid var(--accent);
-    box-shadow: 0 4px 20px rgba(112, 137, 147, 0.3);
+    background: linear-gradient(90deg, #333333 0%, #666666 100%) !important;
+    border-bottom: 3px solid #808080;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .custom-navbar a,
@@ -116,20 +118,20 @@ body {
     padding-top: .5rem;
     padding-bottom: .5rem;
     background: #ffffff;
-    border: 2px solid #A1C2BD;
+    border: 2px solid #808080;
     border-radius: .5rem;
-    color: #333333;
+    color: #1a1a1a;
 }
 
 .custom-input::placeholder {
-    color: #708993;
+    color: #666666;
 }
 
 .custom-input:focus {
     outline: none;
     background: #ffffff;
-    border-color: #708993;
-    box-shadow: 0 0 0 3px rgba(161, 194, 189, 0.3);
+    border-color: #666666;
+    box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.2);
 }
 
 .mobile-menu {
@@ -183,14 +185,14 @@ body {
     width: 250px;
     flex-shrink: 0;
     margin-right: 2rem;
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-    color: var(--text);
+    background: linear-gradient(135deg, #333333, #666666);
+    color: var(--white);
     border-radius: 12px;
     display: grid;
     place-items: center;
     font-size: 1.2rem;
     font-weight: 700;
-    box-shadow: 0 10px 20px rgba(112, 137, 147, 0.2);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -227,11 +229,13 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
+    /* prevent grid overflow when cards translate on hover */
+    overflow-x: hidden;
 }
 
 .item-card {
-    background: linear-gradient(145deg, #ffffff 0%, var(--bg) 100%) !important;
-    border: 2px solid var(--accent) !important;
+    background: linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%) !important;
+    border: 2px solid #808080 !important;
     border-radius: 16px !important;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -239,13 +243,13 @@ body {
     flex-direction: column;
     height: 100%;
     min-height: 420px;
-    box-shadow: 0 4px 15px rgba(112, 137, 147, 0.15);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .item-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(112, 137, 147, 0.25) !important;
-    border-color: var(--secondary-color) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+    border-color: #333333 !important;
 }
 
 .item-card .card-image {
@@ -305,7 +309,7 @@ body {
 
 .item-card .card-meta i {
     font-size: 1rem;
-    color: var(--secondary-color);
+    color: #666666;
 }
 
 .item-card .card-footer {
@@ -365,23 +369,23 @@ body {
 }
 
 .item-card .btn-read {
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    background: linear-gradient(135deg, #333333, #666666);
     color: var(--white);
 }
 
 .item-card .btn-read:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(112, 137, 147, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .item-card .btn-details {
     background: transparent;
-    border: 2px solid var(--accent) !important;
+    border: 2px solid #808080 !important;
     color: var(--text);
 }
 
 .item-card .btn-details:hover {
-    background: var(--accent) !important;
+    background: #808080 !important;
 }
 
 /* Favorite button */
@@ -417,11 +421,11 @@ body {
 
 /* Footer - Clean Design */
 .site-footer {
-    background: linear-gradient(180deg, var(--bg) 0%, #d8e8e3 100%);
+    background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%);
     color: var(--text);
     padding: 4rem 0 2rem;
     font-size: 0.95rem;
-    border-top: 3px solid var(--accent);
+    border-top: 3px solid #808080;
 }
 
 .footer-container {
@@ -507,7 +511,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    background: linear-gradient(135deg, #333333, #666666);
     color: var(--white);
     display: flex;
     align-items: center;
@@ -519,7 +523,7 @@ body {
 
 .social-icon:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(112, 137, 147, 0.35);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .footer-bottom {

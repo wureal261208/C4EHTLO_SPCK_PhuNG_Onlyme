@@ -1,16 +1,17 @@
 :root {
-    --primary-color: #A1C2BD;
-    --secondary-color: #708993;
+    /* Black, White, Grey Color Palette */
+    --primary-color: #333333;
+    --secondary-color: #666666;
     --black: #000000;
     --white: #ffffff;
-    --gray: #efefef;
-    --gray-2: #757575;
-    --text: #333333;
+    --gray: #e0e0e0;
+    --gray-2: #888888;
+    --text: #1a1a1a;
 
-    --facebook-color: #4267B2;
-    --google-color: #DB4437;
-    --twitter-color: #1DA1F2;
-    --insta-color: #E1306C;
+    --facebook-color: #333333;
+    --google-color: #666666;
+    --twitter-color: #888888;
+    --insta-color: #1a1a1a;
 }
 
 * {
@@ -257,7 +258,7 @@ b {
     height: 100vh;
     width: 300vw;
     transform: translate(35%, 0);
-    background-image: linear-gradient(-45deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    background-image: linear-gradient(-45deg, #333333 0%, #666666 100%);
     transition: 1s ease-in-out;
     z-index: 6;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
