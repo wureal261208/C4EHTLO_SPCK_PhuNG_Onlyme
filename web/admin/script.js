@@ -77,6 +77,445 @@ function clearChaptersForm() {
     `;
 }
 
+// ═════════════════════════════════════════════════════════════
+// FORM VALIDATION FUNCTIONS
+// ═════════════════════════════════════════════════════════════
+
+// Validation helper functions
+const ValidationUtils = {
+    // Validate required field
+    required: (value) => {
+        if (!value || value.trim() === '') {
+            return 'This field is required';
+        }
+        return null;
+    },
+
+    // Validate ISBN (both ISBN-10 and ISBN-13)
+    isbn: (value) => {
+        if (!value || value.trim() === '') return null; // ISBN is optional
+        
+        const cleanISBN = value.replace(/[-\s]/g, '');
+        
+        // ISBN-10 validation
+        if (cleanISBN.length === 10) {
+            if (!/^\d{9}[\dXx]$/.test(cleanISBN)) {
+                return 'Invalid ISBN-10 format';
+            }
+            return null;
+        }
+        
+        // ISBN-13 validation
+        if (cleanISBN.length === 13) {
+            if (!/^\d{13}$/.test(cleanISBN)) {
+                return 'Invalid ISBN-13 format';
+            }
+            return null;
+        }
+        
+        return 'ISBN must be 10 or 13 digits';
+    },
+
+    // Validate URL
+    url: (value) => {
+        if (!value || value.trim() === '') return null; // URL is optional
+        
+        try {
+            new URL(value);
+            return null;
+        } catch (e) {
+            return 'Please enter a valid URL (starting with http:// or https://)';
+        }
+    },
+
+    // Validate page number
+    pages: (value) => {
+        if (!value || value.trim() === '') {
+            return 'Number of pages is required';
+        }
+        
+        const num = parseInt(value);
+        if (isNaN(num) || num < 1) {
+            return 'Pages must be a positive number';
+        }
+        
+        if (num > 10000) {
+            return 'Pages cannot exceed 10,000';
+        }
+        
+        return null;
+    },
+
+    // Validate title length
+    title: (value) => {
+        if (!value || value.trim() === '') {
+            return 'Book title is required';
+        }
+        
+        if (value.trim().length < 2) {
+            return 'Title must be at least 2 characters';
+        }
+        
+        if (value.trim().length > 200) {
+            return 'Title cannot exceed 200 characters';
+        }
+        
+        return null;
+    },
+
+    // Validate author name
+    author: (value) => {
+        if (!value || value.trim() === '') {
+            return 'Author name is required';
+        }
+        
+        if (value.trim().length < 2) {
+            return 'Author name must be at least 2 characters';
+        }
+        
+        if (value.trim().length > 100) {
+            return 'Author name cannot exceed 100 characters';
+        }
+        
+        return null;
+    },
+
+    // Validate genre
+    genre: (value) => {
+        if (!value || value.trim() === '') {
+            return 'Genre is required';
+        }
+        
+        if (value.trim().length > 50) {
+            return 'Genre cannot exceed 50 characters';
+        }
+        
+        return null;
+    },
+
+    // Validate description length
+    description: (value) => {
+        if (!value) return null;
+        
+        if (value.length > 2000) {
+            return 'Description cannot exceed 2,000 characters';
+        }
+        
+        return null;
+    },
+
+    // Validate book type
+    bookType: (value) => {
+        if (!value || value.trim() === '') {
+            return 'Book type is required';
+        }
+        
+        const validTypes = ['img', 'text'];
+        if (!validTypes.includes(value.trim())) {
+            return 'Book type must be either "img" (Picture Book) or "text" (Chapter Book)';
+        }
+        
+        return null;
+    }
+};
+
+// Function to show validation error on a field
+function showFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    
+    // Remove any existing error message
+    removeFieldError(fieldId);
+    
+    // Add error class
+    field.classList.add('error');
+    field.classList.remove('success');
+    
+    // Create error message element
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.id = `${fieldId}-error`;
+    errorDiv.innerHTML = `<i class='bx bx-error-circle'></i> ${message}`;
+    
+    // Insert after the field
+    field.parentNode.insertBefore(errorDiv, field.nextSibling);
+    
+    // Add shake animation
+    field.style.animation = 'none';
+    field.offsetHeight; // Trigger reflow
+    field.style.animation = 'shake 0.3s ease';
+}
+
+// Function to show field success
+function showFieldSuccess(fieldId) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    
+    // Remove any existing error message
+    removeFieldError(fieldId);
+    
+    // Add success class
+    field.classList.remove('error');
+    field.classList.add('success');
+}
+
+// Function to remove field error
+function removeFieldError(fieldId) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    
+    field.classList.remove('error');
+    field.classList.remove('success');
+    
+    const errorDiv = document.getElementById(`${fieldId}-error`);
+    if (errorDiv) {
+        errorDiv.remove();
+    }
+}
+
+// Function to validate a single field
+function validateField(fieldId, validationFn) {
+    const field = document.getElementById(fieldId);
+    if (!field) return true;
+    
+    const value = field.value;
+    const error = validationFn(value);
+    
+    if (error) {
+        showFieldError(fieldId, error);
+        return false;
+    } else if (value && value.trim()) {
+        showFieldSuccess(fieldId);
+        return true;
+    }
+    
+    return true;
+}
+
+// Function to clear all form validation
+function clearFormValidation(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        removeFieldError(input.id);
+    });
+}
+
+// Function to check for duplicate book title
+function checkDuplicateTitle(title) {
+    const existingBook = books.find(b => 
+        b.title.toLowerCase().trim() === title.toLowerCase().trim()
+    );
+    
+    return existingBook;
+}
+
+// Function to show duplicate warning
+function showDuplicateWarning(existingBook) {
+    // Remove any existing warning
+    const existingWarning = document.querySelector('.duplicate-warning');
+    if (existingWarning) {
+        existingWarning.remove();
+    }
+    
+    const form = document.querySelector('.modal-form');
+    const firstFormGroup = form.querySelector('.form-group');
+    
+    const warningDiv = document.createElement('div');
+    warningDiv.className = 'duplicate-warning';
+    warningDiv.innerHTML = `
+        <i class='bx bx-warning'></i>
+        <span>A book with similar title "<strong>${existingBook.title}</strong>" already exists. 
+        Consider adding a different edition or verifying the title.</span>
+    `;
+    
+    form.insertBefore(warningDiv, firstFormGroup);
+}
+
+// Function to remove duplicate warning
+function removeDuplicateWarning() {
+    const warning = document.querySelector('.duplicate-warning');
+    if (warning) {
+        warning.remove();
+    }
+}
+
+// Add CSS for shake animation
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-5px); }
+        40%, 80% { transform: translateX(5px); }
+    }
+`;
+document.head.appendChild(shakeStyle);
+
+// Initialize real-time validation listeners
+function initValidationListeners() {
+    const fields = [
+        { id: 'book-title', validator: ValidationUtils.title },
+        { id: 'book-author', validator: ValidationUtils.author },
+        { id: 'book-image', validator: ValidationUtils.url },
+        { id: 'book-genre', validator: ValidationUtils.genre },
+        { id: 'book-pages', validator: ValidationUtils.pages },
+        { id: 'book-description', validator: ValidationUtils.description },
+        { id: 'book-type', validator: ValidationUtils.bookType },
+        { id: 'book-isbn', validator: ValidationUtils.isbn }
+    ];
+    
+    fields.forEach(field => {
+        const element = document.getElementById(field.id);
+        if (!element) return;
+        
+        // Validate on blur
+        element.addEventListener('blur', () => {
+            validateField(field.id, field.validator);
+        });
+        
+        // Validate on input (with debounce for better performance)
+        let debounceTimer;
+        element.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                validateField(field.id, field.validator);
+            }, 500);
+        });
+        
+        // Clear error on focus
+        element.addEventListener('focus', () => {
+            removeFieldError(field.id);
+            removeDuplicateWarning();
+        });
+    });
+}
+
+// Enhanced addBook function with validation
+function addBook(event) {
+    event.preventDefault();
+    
+    // Get form values
+    const title = document.getElementById('book-title').value.trim();
+    const author = document.getElementById('book-author').value.trim();
+    const imageUrl = document.getElementById('book-image').value.trim();
+    const genre = document.getElementById('book-genre').value.trim();
+    const pages = document.getElementById('book-pages').value;
+    const description = document.getElementById('book-description').value.trim();
+    const bookType = document.getElementById('book-type').value;
+    const publisher = document.getElementById('book-publisher').value.trim();
+    const pubdate = document.getElementById('book-pubdate').value;
+    const isbn = document.getElementById('book-isbn').value.trim();
+    const language = document.getElementById('book-language').value;
+    const status = document.getElementById('book-status').value;
+    
+    // Validate all required fields first
+    const validations = [
+        { id: 'book-title', validator: ValidationUtils.title },
+        { id: 'book-author', validator: ValidationUtils.author },
+        { id: 'book-genre', validator: ValidationUtils.genre },
+        { id: 'book-pages', validator: ValidationUtils.pages },
+        { id: 'book-image', validator: ValidationUtils.url },
+        { id: 'book-description', validator: ValidationUtils.description },
+        { id: 'book-type', validator: ValidationUtils.bookType },
+        { id: 'book-isbn', validator: ValidationUtils.isbn }
+    ];
+    
+    let hasErrors = false;
+    
+    // Validate all fields
+    validations.forEach(({ id, validator }) => {
+        if (!validateField(id, validator)) {
+            hasErrors = true;
+        }
+    });
+    
+    // If there are validation errors, stop
+    if (hasErrors) {
+        showNotification('Please fix the validation errors before submitting', 'error');
+        
+        // Focus on first error field
+        const firstError = document.querySelector('.modal-form input.error');
+        if (firstError) {
+            firstError.focus();
+        }
+        return;
+    }
+    
+    // Check for duplicate title
+    const duplicateBook = checkDuplicateTitle(title);
+    if (duplicateBook) {
+        showDuplicateWarning(duplicateBook);
+        showNotification('A book with similar title already exists!', 'warning');
+        document.getElementById('book-title').focus();
+        return;
+    }
+    
+    // Remove duplicate warning if exists
+    removeDuplicateWarning();
+    
+    // Collect chapters
+    const chapters = collectChapters();
+    
+    // Default cover image if none provided
+    const defaultImage = "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80";
+    
+    // Ensure a usable image string; if the user entered something but it's not a valid URL we still fall back
+    const finalImage = (imageUrl && /^https?:\/\//i.test(imageUrl)) ? imageUrl : defaultImage;
+    if (imageUrl && finalImage === defaultImage) {
+        showNotification('Invalid image URL. Using default cover.', 'warning');
+    }
+    
+    // Add loading state to button
+    const saveBtn = document.querySelector('.btn-save');
+    if (saveBtn) {
+        saveBtn.classList.add('loading');
+        saveBtn.disabled = true;
+    }
+    
+    // Simulate a small delay for better UX
+    setTimeout(() => {
+        const newBook = {
+            id: Date.now(),
+            title,
+            author,
+            image: finalImage,
+            genre,
+            pages: parseInt(pages),
+            status,
+            chapters,
+            // Additional fields (optional)
+            description: description || '',
+            tags: [bookType], // Store book type as single-element array
+            publisher: publisher || '',
+            pubdate: pubdate || '',
+            isbn: isbn || '',
+            language: language || 'English',
+            // Metadata
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        
+        books.push(newBook);
+        saveBooksToStorage();
+        renderBooks();
+        updateStatsCards();
+        closeModal('book');
+        event.target.reset();
+        clearChaptersForm();
+        clearFormValidation('book-modal');
+        
+        // Remove loading state
+        if (saveBtn) {
+            saveBtn.classList.remove('loading');
+            saveBtn.disabled = false;
+        }
+        
+        showNotification(`Book "${title}" added successfully with ${chapters.length} chapter(s)!`, 'success');
+    }, 500);
+}
+
 // Function to shorten email for display
 function shortenEmail(email) {
     const parts = email.split('@');
@@ -101,6 +540,8 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     loadData();
+    // Initialize validation listeners
+    initValidationListeners();
     // show overview by default
     navigateTo('overview');
 });
@@ -190,6 +631,12 @@ function checkAuth() {
 
 // Load initial data
 function loadData() {
+    // refresh books array from localStorage so that covers and other fields persist
+    const stored = JSON.parse(localStorage.getItem('adminBooks'));
+    if (stored && Array.isArray(stored)) {
+        books = stored;
+    }
+
     renderBooks();
     renderEditors();
     renderStats();
@@ -235,29 +682,40 @@ function updateRoleToggle() {
 // BOOKS MANAGEMENT
 // ═════════════════════════════════════════════════════════════
 
+// Search state
+let currentSearchQuery = '';
+let filteredBooks = [];
+
 function renderBooks() {
     const container = document.getElementById('books-list');
     if (!container) return;
     
-    if (books.length === 0) {
+    // Use filtered books if there's a search query, otherwise use all books
+    const booksToRender = currentSearchQuery ? filteredBooks : books;
+    
+    if (booksToRender.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <i class='bx bx-book'></i>
-                <p>No books yet. Add your first book!</p>
+                <p>${currentSearchQuery ? 'No books match your search.' : 'No books yet. Add your first book!'}</p>
             </div>
         `;
         return;
     }
     
-    container.innerHTML = books.map(book => `
+    container.innerHTML = booksToRender.map(book => `
         <div class="book-item">
+            <!-- cover URL comes from localStorage object; fallback to default if missing -->
             <img src="${book.image || 'https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80'}" alt="${book.title}">
             <div class="book-info">
-                <div class="book-title">${book.title}</div>
-                <div class="book-author">${book.author}</div>
+                <div class="book-title">${highlightMatch(book.title, currentSearchQuery)}</div>
+                <div class="book-author">${highlightMatch(book.author, currentSearchQuery)}</div>
             </div>
             <span class="book-status ${book.status}">${book.status === 'published' ? 'Published' : 'Draft'}</span>
             <div class="book-actions">
+                <button class="btn-edit" onclick="openEditModal(${book.id})" title="Edit">
+                    <i class='bx bx-edit'></i>
+                </button>
                 ${currentRole === 'admin' ? `
                     <button class="btn-publish" onclick="toggleBookStatus(${book.id})" title="${book.status === 'published' ? 'Unpublish' : 'Publish'}">
                         <i class='bx ${book.status === 'published' ? 'bx-bookmark-minus' : 'bx-bookmark-plus'}'></i>
@@ -275,9 +733,71 @@ function renderBooks() {
     `).join('');
 }
 
+// Function to highlight matching text
+function highlightMatch(text, query) {
+    if (!query || !text) return text;
+    
+    const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+    return text.replace(regex, '<match>$1</match>');
+}
+
+// Function to escape special regex characters
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Search books function
+function searchBooks(query) {
+    currentSearchQuery = query.trim().toLowerCase();
+    
+    const searchContainer = document.querySelector('.search-container');
+    const searchResultsInfo = document.getElementById('search-results-info');
+    
+    // Toggle clear button visibility
+    if (currentSearchQuery) {
+        searchContainer.classList.add('has-value');
+    } else {
+        searchContainer.classList.remove('has-value');
+    }
+    
+    if (!currentSearchQuery) {
+        // Clear search - show all books
+        filteredBooks = [];
+        searchResultsInfo.classList.remove('show');
+        renderBooks();
+        return;
+    }
+    
+    // Filter books by title, author, or genre
+    filteredBooks = books.filter(book => {
+        const titleMatch = book.title && book.title.toLowerCase().includes(currentSearchQuery);
+        const authorMatch = book.author && book.author.toLowerCase().includes(currentSearchQuery);
+        const genreMatch = book.genre && book.genre.toLowerCase().includes(currentSearchQuery);
+        
+        return titleMatch || authorMatch || genreMatch;
+    });
+    
+    // Update search results info
+    searchResultsInfo.innerHTML = `Found <span>${filteredBooks.length}</span> book(s) matching "${query}"`;
+    searchResultsInfo.classList.add('show');
+    
+    renderBooks();
+}
+
+// Clear search function
+function clearSearch() {
+    const searchInput = document.getElementById('book-search');
+    searchInput.value = '';
+    searchBooks('');
+    searchInput.focus();
+}
+
 function openModal(type) {
     if (type === 'book') {
         document.getElementById('book-modal').classList.add('active');
+        // Clear validation when opening modal
+        clearFormValidation('book-modal');
+        removeDuplicateWarning();
     }
 }
 
@@ -285,17 +805,31 @@ function closeModal(type) {
     if (type === 'book') {
         document.getElementById('book-modal').classList.remove('active');
         clearChaptersForm(); // Clear chapters when modal closes
+        clearFormValidation('book-modal'); // Clear validation when modal closes
+        removeDuplicateWarning(); // Remove duplicate warning if exists
+    }
+    if (type === 'edit-book') {
+        document.getElementById('edit-book-modal').classList.remove('active');
+        clearEditChaptersForm(); // Clear chapters when edit modal closes
+        clearFormValidation('edit-book-modal'); // Clear validation when modal closes
     }
 }
 
 function addBook(event) {
     event.preventDefault();
     
-    const title = document.getElementById('book-title').value;
-    const author = document.getElementById('book-author').value;
-    const imageUrl = document.getElementById('book-image').value;
-    const genre = document.getElementById('book-genre').value;
+    // Get form values
+    const title = document.getElementById('book-title').value.trim();
+    const author = document.getElementById('book-author').value.trim();
+    const imageUrl = document.getElementById('book-image').value.trim();
+    const genre = document.getElementById('book-genre').value.trim();
     const pages = document.getElementById('book-pages').value;
+    const description = document.getElementById('book-description').value.trim();
+    const bookType = document.getElementById('book-type').value;
+    const publisher = document.getElementById('book-publisher').value.trim();
+    const pubdate = document.getElementById('book-pubdate').value;
+    const isbn = document.getElementById('book-isbn').value.trim();
+    const language = document.getElementById('book-language').value;
     const status = document.getElementById('book-status').value;
     
     // Collect chapters
@@ -305,9 +839,9 @@ function addBook(event) {
     const defaultImage = "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80";
     
     // ensure a usable image string; if the user entered something but it's not a valid URL we still fall back
-    const finalImage = (imageUrl && /^https?:\/\//i.test(imageUrl.trim())) ? imageUrl.trim() : defaultImage;
+    const finalImage = (imageUrl && /^https?:\/\//i.test(imageUrl)) ? imageUrl : defaultImage;
     if (imageUrl && finalImage === defaultImage) {
-        console.warn('Provided book image URL was invalid, using default instead:', imageUrl);
+        showNotification('Invalid image URL. Using default cover.', 'warning');
     }
 
     const newBook = {
@@ -318,7 +852,17 @@ function addBook(event) {
         genre,
         pages: parseInt(pages),
         status,
-        chapters: chapters // Add chapters to the book object
+        chapters,
+        // Additional fields (optional)
+        description: description || '',
+        tags: [bookType], // Store book type as single-element array
+        publisher: publisher || '',
+        pubdate: pubdate || '',
+        isbn: isbn || '',
+        language: language || 'English',
+        // Metadata
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
     };
     
     books.push(newBook);
@@ -327,13 +871,237 @@ function addBook(event) {
     updateStatsCards();
     closeModal('book');
     event.target.reset();
-    showNotification('Book added successfully with ' + chapters.length + ' chapter(s)!', 'success');
+    clearChaptersForm();
+    showNotification(`Book "${title}" added successfully with ${chapters.length} chapter(s)!`, 'success');
+}
+
+// ═════════════════════════════════════════════════════════════
+// EDIT BOOK FUNCTIONS
+// ═════════════════════════════════════════════════════════════
+
+// Function to open edit modal and populate form with book data
+function openEditModal(bookId) {
+    const book = books.find(b => b.id === bookId);
+    if (!book) {
+        showNotification('Book not found!', 'error');
+        return;
+    }
+    
+    // Store book ID in hidden field
+    document.getElementById('edit-book-id').value = bookId;
+    
+    // Populate form fields
+    document.getElementById('edit-book-title').value = book.title || '';
+    document.getElementById('edit-book-author').value = book.author || '';
+    document.getElementById('edit-book-image').value = book.image || '';
+    document.getElementById('edit-book-genre').value = book.genre || '';
+    document.getElementById('edit-book-pages').value = book.pages || '';
+    document.getElementById('edit-book-description').value = book.description || '';
+    // Get book type from tags array (first element) or default to 'text'
+    const bookType = book.tags && book.tags.length > 0 ? book.tags[0] : 'text';
+    document.getElementById('edit-book-type').value = bookType;
+    document.getElementById('edit-book-publisher').value = book.publisher || '';
+    document.getElementById('edit-book-pubdate').value = book.pubdate || '';
+    document.getElementById('edit-book-isbn').value = book.isbn || '';
+    document.getElementById('edit-book-language').value = book.language || 'English';
+    document.getElementById('edit-book-status').value = book.status || 'draft';
+    
+    // Populate chapters
+    populateEditChapters(book.chapters || []);
+    
+    // Show modal
+    document.getElementById('edit-book-modal').classList.add('active');
+}
+
+// Function to populate chapters in edit modal
+function populateEditChapters(chapters) {
+    const container = document.getElementById('edit-chapters-container');
+    
+    if (chapters.length === 0) {
+        // Add one empty chapter row if no chapters exist
+        container.innerHTML = `
+            <div class="chapter-input-row">
+                <input type="text" class="chapter-title" placeholder="Chapter Title" required>
+                <button type="button" class="btn-remove-chapter" onclick="removeEditChapterRow(this)">
+                    <i class='bx bx-trash'></i>
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = chapters.map((chapter, index) => `
+        <div class="chapter-input-row">
+            <input type="text" class="chapter-title" placeholder="Chapter Title" value="${chapter.title || ''}" required>
+            <button type="button" class="btn-remove-chapter" onclick="removeEditChapterRow(this)">
+                <i class='bx bx-trash'></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+// Function to add chapter row in edit modal
+function addEditChapterRow() {
+    const container = document.getElementById('edit-chapters-container');
+    const row = document.createElement('div');
+    row.className = 'chapter-input-row';
+    row.innerHTML = `
+        <input type="text" class="chapter-title" placeholder="Chapter Title" required>
+        <button type="button" class="btn-remove-chapter" onclick="removeEditChapterRow(this)">
+            <i class='bx bx-trash'></i>
+        </button>
+    `;
+    container.appendChild(row);
+}
+
+// Function to remove chapter row in edit modal
+function removeEditChapterRow(button) {
+    const container = document.getElementById('edit-chapters-container');
+    const rows = container.querySelectorAll('.chapter-input-row');
+    if (rows.length > 1) {
+        button.parentElement.remove();
+    } else {
+        showNotification('At least one chapter is required!', 'error');
+    }
+}
+
+// Function to clear edit chapters form
+function clearEditChaptersForm() {
+    const container = document.getElementById('edit-chapters-container');
+    container.innerHTML = `
+        <div class="chapter-input-row">
+            <input type="text" class="chapter-title" placeholder="Chapter Title" required>
+            <button type="button" class="btn-remove-chapter" onclick="removeEditChapterRow(this)">
+                <i class='bx bx-trash'></i>
+            </button>
+        </div>
+    `;
+}
+
+// Function to collect chapters from edit form
+function collectEditChapters() {
+    const chapterInputs = document.querySelectorAll('#edit-chapters-container .chapter-title');
+    const chapters = [];
+    chapterInputs.forEach((input, index) => {
+        if (input.value.trim()) {
+            chapters.push({
+                number: index + 1,
+                title: input.value.trim()
+            });
+        }
+    });
+    return chapters;
+}
+
+// Function to handle edit book form submission
+function editBook(event) {
+    event.preventDefault();
+    
+    // Get book ID
+    const bookId = parseInt(document.getElementById('edit-book-id').value);
+    const bookIndex = books.findIndex(b => b.id === bookId);
+    
+    if (bookIndex === -1) {
+        showNotification('Book not found!', 'error');
+        return;
+    }
+    
+    // Get form values
+    const title = document.getElementById('edit-book-title').value.trim();
+    const author = document.getElementById('edit-book-author').value.trim();
+    const imageUrl = document.getElementById('edit-book-image').value.trim();
+    const genre = document.getElementById('edit-book-genre').value.trim();
+    const pages = document.getElementById('edit-book-pages').value;
+    const description = document.getElementById('edit-book-description').value.trim();
+    const bookType = document.getElementById('edit-book-type').value;
+    const publisher = document.getElementById('edit-book-publisher').value.trim();
+    const pubdate = document.getElementById('edit-book-pubdate').value;
+    const isbn = document.getElementById('edit-book-isbn').value.trim();
+    const language = document.getElementById('edit-book-language').value;
+    const status = document.getElementById('edit-book-status').value;
+    
+    // Collect chapters
+    const chapters = collectEditChapters();
+    
+    // Default cover image if none provided
+    const defaultImage = "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80";
+    
+    // Ensure a usable image string
+    const finalImage = (imageUrl && /^https?:\/\//i.test(imageUrl)) ? imageUrl : defaultImage;
+    if (imageUrl && finalImage === defaultImage) {
+        showNotification('Invalid image URL. Using default cover.', 'warning');
+    }
+    
+    // Add loading state to button
+    const saveBtn = document.querySelector('#edit-book-modal .btn-save');
+    if (saveBtn) {
+        saveBtn.classList.add('loading');
+        saveBtn.disabled = true;
+    }
+    
+    // Simulate a small delay for better UX
+    setTimeout(() => {
+        // Update book
+        books[bookIndex] = {
+            ...books[bookIndex],
+            title,
+            author,
+            image: finalImage,
+            genre,
+            pages: parseInt(pages),
+            status,
+            chapters,
+            description: description || '',
+            tags: [bookType], // Store book type as single-element array
+            publisher: publisher || '',
+            pubdate: pubdate || '',
+            isbn: isbn || '',
+            language: language || 'English',
+            updatedAt: new Date().toISOString()
+        };
+        
+        saveBooksToStorage();
+        renderBooks();
+        updateStatsCards();
+        closeModal('edit-book');
+        event.target.reset();
+        clearEditChaptersForm();
+        
+        // Remove loading state
+        if (saveBtn) {
+            saveBtn.classList.remove('loading');
+            saveBtn.disabled = false;
+        }
+        
+        showNotification(`Book "${title}" updated successfully!`, 'success');
+    }, 500);
 }
 
 function toggleBookStatus(bookId) {
     const book = books.find(b => b.id === bookId);
     if (book) {
+        const wasPublished = book.status === 'published';
         book.status = book.status === 'published' ? 'draft' : 'published';
+        
+        // If publishing a book (not unpublishing), mark it as new
+        if (!wasPublished && book.status === 'published') {
+            book.publishedAt = new Date().toISOString();
+            book.isNew = true;
+            
+            // Store new book notification for users
+            const newBookNotification = {
+                bookId: book.id,
+                title: book.title,
+                publishedAt: book.publishedAt,
+                seen: false
+            };
+            
+            // Get existing notifications
+            let notifications = JSON.parse(localStorage.getItem('newBookNotifications')) || [];
+            notifications.push(newBookNotification);
+            localStorage.setItem('newBookNotifications', JSON.stringify(notifications));
+        }
+        
         saveBooksToStorage();
         renderBooks();
         updateStatsCards();

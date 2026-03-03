@@ -1,3 +1,45 @@
+// Toast Notification Function
+function showToast(message, type = 'success', duration = 3000) {
+    // Create toast container if not exists
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    // Set icon based on type
+    let icon = 'bx bx-info-circle';
+    if (type === 'success') icon = 'bx bx-check-circle';
+    else if (type === 'error') icon = 'bx bx-x-circle';
+    else if (type === 'warning') icon = 'bx bx-warning';
+    else if (type === 'info') icon = 'bx bx-info-circle';
+
+    toast.innerHTML = `
+        <i class="${icon}"></i>
+        <span>${message}</span>
+        <span class="toast-close" onclick="this.parentElement.remove()">
+            <i class='bx bx-x'></i>
+        </span>
+    `;
+
+    container.appendChild(toast);
+
+    // Remove toast after duration
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.3s ease-in forwards';
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.remove();
+            }
+        }, 300);
+    }, duration);
+}
+
 // Initialize users database in localStorage if not exists
 function initUsersDB() {
     if (!localStorage.getItem('users')) {
@@ -179,8 +221,10 @@ function performRegister() {
     localStorage.setItem('currentUser', JSON.stringify(newUser));
 
     // Redirect to main page
-    alert("Registration successful! Welcome to BookWorm!");
-    window.location.href = "../main/index(acc).html";
+    showToast("Registration successful! Welcome to BookWorm!", "success");
+    setTimeout(() => {
+        window.location.href = "../main/index(acc).html";
+    }, 1500);
 }
 
 // Login Form
@@ -233,6 +277,7 @@ function performLogin() {
         hasError = true;
     }
 
+    // Password validation
     if (isEmpty(pass)) {
         showError(loginForm.errPass, "Please enter your password");
         hasError = true;
@@ -240,14 +285,28 @@ function performLogin() {
 
     if (hasError) return;
 
-    // Check credentials
+    // Check if user exists
     const users = getUsers();
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass);
+    const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
-    if (!user) {
-        showError(loginForm.errEmail, "Invalid email or password");
-        return;
+    if (!existingUser) {
+        showError(loginForm.errEmail, "User does not exist");
+        hasError = true;
     }
+
+    // Check password if user exists
+    if (existingUser && isEmpty(pass)) {
+        showError(loginForm.errPass, "Please enter your password");
+        hasError = true;
+    } else if (existingUser && existingUser.password !== pass) {
+        showError(loginForm.errPass, "Incorrect password");
+        hasError = true;
+    }
+
+    if (hasError) return;
+
+    // Login successful - get the user (we know it exists from above)
+    const user = existingUser;
 
     // Save current user to localStorage
     localStorage.setItem('currentUser', JSON.stringify(user));
@@ -255,10 +314,12 @@ function performLogin() {
     localStorage.setItem('userRole', user.role);
 
     // Redirect based on role
-    alert("Login successful! Welcome back!");
-    if (user.role === 'admin') {
-        window.location.href = "../admin/index(admin).html";
-    } else {
-        window.location.href = "../main/index(acc).html";
-    }
+    showToast("Login successful! Welcome back!", "success");
+    setTimeout(() => {
+        if (user.role === 'admin') {
+            window.location.href = "../admin/index(admin).html";
+        } else {
+            window.location.href = "../main/index(acc).html";
+        }
+    }, 1500);
 }

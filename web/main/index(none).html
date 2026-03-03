@@ -26,18 +26,26 @@
                             <span>BookWorm</span>
                         </a>
                     </div>
-                    <div class="hidden md:block ml-10">
+<div class="hidden md:block ml-10">
                         <div class="flex items-baseline space-x-4 nav-links">
-                            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link active"><i class='bx bx-trending-up' aria-hidden="true"></i> Trending</a>
+                            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link active"><i class='bx bx-search' aria-hidden="true"></i> Browse</a>
                             <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link"><i class='bx bx-category' aria-hidden="true"></i> Categories</a>
-                            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link"><i class='bx bx-phone-call' aria-hidden="true"></i> Contact</a>
+                            <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link"><i class='bx bx-compass' aria-hidden="true"></i> Explore</a>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
-                    <div class="relative hidden sm:block">
+                    <!-- Search Bar with Dropdown -->
+                    <div class="relative hidden sm:block" id="search-wrapper">
                         <i class='bx bx-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' aria-hidden="true"></i>
-                        <input type="text" placeholder="Search books..." class="custom-input text-sm pl-10">
+                        <input type="text" id="main-search-input" placeholder="Search books..." class="custom-input text-sm pl-10 pr-10" autocomplete="off">
+                        <button type="button" id="search-clear-btn" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+                            <i class='bx bx-x'></i>
+                        </button>
+                        <!-- Search Results Dropdown -->
+                        <div id="search-dropdown" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg max-h-96 overflow-y-auto z-50 hidden">
+                            <div id="search-results"></div>
+                        </div>
                     </div>
                     <a href="http://127.0.0.1:5500/web/log&register/index.html" class="flex items-center gap-2 focus:outline-none getStarted px-4 py-2 rounded-md text-sm font-medium">
                         <i class='bx bx-log-in' aria-hidden="true"></i>
@@ -53,11 +61,11 @@
                 </div>
             </div>
         </div>
-        <div class="mobile-menu hidden md:hidden fixed top-16 left-0 right-0 z-40" style="background:linear-gradient(135deg,var(--secondary-color),var(--primary-color))">
+<div class="mobile-menu hidden md:hidden fixed top-16 left-0 right-0 z-40" style="background:linear-gradient(135deg,var(--secondary-color),var(--primary-color))">
             <div class="px-4 py-4 space-y-2">
-                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium nav-link active">Trending</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium nav-link active">Browse</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium nav-link">Categories</a>
-                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium nav-link">Contact</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium nav-link">Explore</a>
             </div>
         </div>
     </nav>
@@ -88,6 +96,17 @@
         <!-- Balanced Grid Cards - Loaded from Admin Dashboard -->
         <div id="items-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!-- Books will be loaded dynamically from localStorage (admin dashboard) -->
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination-container" class="flex justify-center items-center gap-4 mt-8">
+            <button id="prev-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class='bx bx-chevron-left'></i> Previous
+            </button>
+            <span id="page-info" class="text-gray-600">Page 1 of 1</span>
+            <button id="next-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next <i class='bx bx-chevron-right'></i>
+            </button>
         </div>
     </main>
 

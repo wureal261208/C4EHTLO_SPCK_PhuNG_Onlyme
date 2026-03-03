@@ -125,6 +125,17 @@ textarea {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+/* dark text for search input and dropdown */
+#search-wrapper input,
+#search-dropdown,
+#search-dropdown * {
+    color: #000 !important;
+}
+
+#search-wrapper input::placeholder {
+    color: #666666;
+}
+
 input.custom-input:focus,
 textarea:focus {
     border-color: var(--secondary-color);

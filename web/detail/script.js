@@ -2,6 +2,139 @@
 // DOMContentLoaded to ensure elements exist
 
 document.addEventListener('DOMContentLoaded', () => {
+    // =====================
+    // NOTIFICATION SYSTEM
+    // =====================
+    const notificationBtn = document.getElementById('notification-btn');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    const notificationList = document.getElementById('notification-list');
+    const notificationBadge = document.getElementById('notification-badge');
+    const clearNotificationsBtn = document.getElementById('clear-notifications');
+
+    // Toggle notification dropdown
+    if (notificationBtn && notificationDropdown) {
+        notificationBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = !notificationDropdown.classList.contains('opacity-0');
+            if (isVisible) {
+                notificationDropdown.classList.add('opacity-0', 'invisible');
+                notificationDropdown.classList.remove('opacity-100', 'visible');
+            } else {
+                notificationDropdown.classList.remove('opacity-0', 'invisible');
+                notificationDropdown.classList.add('opacity-100', 'visible');
+                loadNotifications();
+            }
+        });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (notificationDropdown && !notificationDropdown.contains(e.target) && !notificationBtn.contains(e.target)) {
+            notificationDropdown.classList.add('opacity-0', 'invisible');
+            notificationDropdown.classList.remove('opacity-100', 'visible');
+        }
+    });
+
+    // Load and display notifications
+    function loadNotifications() {
+        if (!notificationList) return;
+
+        // Get notifications from localStorage
+        const notifications = JSON.parse(localStorage.getItem('newBookNotifications')) || [];
+        
+        // Get books from admin to get cover images
+        const adminBooks = JSON.parse(localStorage.getItem('adminBooks')) || [];
+        
+        // Get book data for each notification
+        const notificationsWithCovers = notifications.map(notif => {
+            const book = adminBooks.find(b => b.id === notif.bookId);
+            return {
+                ...notif,
+                image: book ? book.image : null
+            };
+        });
+
+        // Update badge count
+        const unreadCount = notificationsWithCovers.filter(n => !n.seen).length;
+        if (notificationBadge) {
+            if (unreadCount > 0) {
+                notificationBadge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                notificationBadge.classList.remove('hidden');
+            } else {
+                notificationBadge.classList.add('hidden');
+            }
+        }
+
+        // Render notifications
+        if (notificationsWithCovers.length === 0) {
+            notificationList.innerHTML = '<p class="px-4 py-4 text-gray-500 text-center text-sm">No new notifications</p>';
+            return;
+        }
+
+        notificationList.innerHTML = notificationsWithCovers.map((notif, index) => {
+            const defaultCover = "https://images.unsplash.com/photo-1543002588-bfa74090ca80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=150&q=80";
+            const coverImage = notif.image || defaultCover;
+            const date = notif.publishedAt ? new Date(notif.publishedAt).toLocaleDateString() : '';
+            
+            return `
+                <div class="notification-item flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b" onclick="viewBookDetail(${notif.bookId})">
+                    <img src="${coverImage}" alt="${notif.title}" class="w-12 h-16 object-cover rounded">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-black truncate">${notif.title}</p>
+                        <p class="text-xs text-gray-600">New book published! ${date ? '- ' + date : ''}</p>
+                    </div>
+                    ${!notif.seen ? '<span class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></span>' : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Mark notifications as seen
+    function markNotificationsAsSeen() {
+        const notifications = JSON.parse(localStorage.getItem('newBookNotifications')) || [];
+        notifications.forEach(n => n.seen = true);
+        localStorage.setItem('newBookNotifications', JSON.stringify(notifications));
+        if (notificationBadge) {
+            notificationBadge.classList.add('hidden');
+        }
+    }
+
+    // Clear all notifications
+    if (clearNotificationsBtn) {
+        clearNotificationsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            localStorage.removeItem('newBookNotifications');
+            loadNotifications();
+        });
+    }
+
+    // Mark as seen when dropdown opens
+    if (notificationDropdown) {
+        const observer = new MutationObserver(() => {
+            if (notificationDropdown.classList.contains('opacity-100')) {
+                markNotificationsAsSeen();
+            }
+        });
+        observer.observe(notificationDropdown, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Make viewBookDetail available globally
+    window.viewBookDetail = function(bookId) {
+        const adminBooks = JSON.parse(localStorage.getItem('adminBooks')) || [];
+        const book = adminBooks.find(b => b.id === bookId);
+        if (book) {
+            localStorage.setItem('currentBook', JSON.stringify(book));
+            // Reload current page with book data
+            window.location.reload();
+        }
+    };
+
+    // Load notifications on page load
+    loadNotifications();
+
+    // =====================
+    // MOBILE MENU
+    // =====================
     // mobile menu toggle + accessibility
     const mobileBtn = document.querySelector('.mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -68,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // give priority to any cover provided via query string
         const params = new URLSearchParams(window.location.search);
         const overrideCover = params.get('cover');
+        const bookId = params.get('id');
 
         if (storedBook) {
             // Use data from localStorage
@@ -91,6 +225,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else {
                 cover = '';
+            }
+        } else if (bookId) {
+            // Try to get book from adminBooks in localStorage
+            const adminBooks = JSON.parse(localStorage.getItem('adminBooks')) || [];
+            const adminBook = adminBooks.find(b => b.id == bookId);
+            
+            if (adminBook) {
+                title = adminBook.title || 'Book Title';
+                author = adminBook.author || 'Author Name';
+                status = adminBook.status || 'Completed';
+                views = adminBook.views || '12.3k';
+                rating = '★★★★★';
+                ratingCount = '(NEW)';
+                description = adminBook.description || '';
+                chapters = adminBook.pages || 200;
+                cover = (adminBook.image && isValidUrl(adminBook.image)) ? adminBook.image : '';
+            } else {
+                // Fall back to URL query parameters
+                title = params.get('title') || 'Book Title';
+                author = params.get('author') || 'Author Name';
+                status = params.get('status') || 'Completed';
+                views = params.get('views') || '12.3k';
+                rating = params.get('rating') || '★★★★★';
+                ratingCount = params.get('ratingCount') || '(1234 reviews)';
+                description = params.get('desc') || '';
+                cover = overrideCover || params.get('cover');
+                chapters = parseInt(params.get('chapters')) || 200;
             }
         } else {
             // Fall back to URL query parameters
