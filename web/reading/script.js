@@ -3,8 +3,7 @@ const chapterList = document.getElementById("chapter-list");
 const continueBtn = document.getElementById("continue-btn");
 const progressBar = document.getElementById("progress-bar");
 const progressText = document.getElementById("progress-text");
-
-const totalChapters = 50;
+const params = new URLSearchParams(window.location.search);
 
 function loadProgress() {
     const progressData = JSON.parse(localStorage.getItem("readingProgress")) || {};
@@ -63,3 +62,77 @@ chapterList.addEventListener("click", (e) => {
         window.location.href = `../detail/Story.html?book=${bookId}&chapter=${chapterNumber}`;
     }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const params = new URLSearchParams(window.location.search);
+    let currentChapter = parseInt(params.get("chapter")) || 1;
+
+    const prevBtn = document.getElementById("prev-chap");
+    const nextBtn = document.getElementById("next-chap");
+    const chapLabel = document.getElementById("current-chap");
+
+    chapLabel.textContent = `Chapter ${currentChapter}`;
+
+    // Lấy book hiện tại
+    const book = JSON.parse(localStorage.getItem("currentBook")) || {};
+    const totalChapters = book.pages || 200;
+
+    function updateNavigation() {
+        chapLabel.textContent = `Chapter ${currentChapter}`;
+
+        if (prevBtn) prevBtn.disabled = currentChapter <= 1;
+        if (nextBtn) nextBtn.disabled = currentChapter >= totalChapters;
+    }
+
+    function goToChapter(chap) {
+        const bookType = book.type || (book.tags ? book.tags[0] : "text");
+
+        if (bookType === "img") {
+            window.location.href = `index(read-img).html?chapter=${chap}`;
+        } else {
+            window.location.href = `index(read-novel).html?chapter=${chap}`;
+        }
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener("click", () => {
+            if (currentChapter > 1) {
+                goToChapter(currentChapter - 1);
+            }
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener("click", () => {
+            if (currentChapter < totalChapters) {
+                goToChapter(currentChapter + 1);
+            }
+        });
+    }
+
+    updateNavigation();
+});
+
+const totalChapters = 50; // hoặc lấy từ admin
+
+const prevChapBtn = document.getElementById("prevChapterBtn");
+const nextChapBtn = document.getElementById("nextChapterBtn");
+
+if (prevChapBtn) {
+    prevChapBtn.onclick = () => {
+        if (currentChapter > 1) {
+            window.location.href =
+                `read.html?book=${bookId}&chapter=${currentChapter - 1}`;
+        }
+    };
+}
+
+if (nextChapBtn) {
+    nextChapBtn.onclick = () => {
+        if (currentChapter < totalChapters) {
+            window.location.href =
+                `read.html?book=${bookId}&chapter=${currentChapter + 1}`;
+        }
+    };
+}

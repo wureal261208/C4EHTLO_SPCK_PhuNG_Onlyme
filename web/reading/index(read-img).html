@@ -224,7 +224,7 @@ body {
                             <img class="h-8 w-auto" src="/img/logo.jpg" alt="BookWorm logo">
                             <span>BookWorm</span>
                         </a>
-<div class="hidden md:block ml-10">
+    <div class="hidden md:block ml-10">
                             <div class="flex items-baseline space-x-4 nav-links">
                                 <a href="#" class="nav-link active" aria-current="page"><i class='bx bx-search'></i> Browse</a>
                                 <a href="#" class="nav-link"><i class='bx bx-category'></i> Categories</a>
@@ -338,6 +338,9 @@ body {
         const pageNumber = document.getElementById("pageNumber");
         const readerSection = document.getElementById("readerSection");
         const scrollMode = document.getElementById("scrollMode");
+        const params = new URLSearchParams(window.location.search);
+        const bookId = params.get("book");
+        let currentChapter = parseInt(params.get("chapter")) || 1;
 
         function refreshPages() {
             pageSources = Array.from(scrollMode.querySelectorAll("img"))
