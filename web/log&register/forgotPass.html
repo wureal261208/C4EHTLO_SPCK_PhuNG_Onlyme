@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password - BookWorm</title>
+    <title>Coming Soon - BookWorm</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -202,48 +202,14 @@
             <img src="/img/logo.jpg" alt="BookWorm">
         </div>
         
-        <!-- Verification Section -->
-        <div class="verification-section" id="verificationSection">
-            <h2>Reset Your Password</h2>
-            <p class="subtitle">Enter your email address and we'll send you a verification code to reset your password.</p>
-            
-            <div class="message" id="message"></div>
-            
-            <form class="forgot-form" id="forgotForm" onsubmit="sendVerification(event)">
-                <div class="input-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" placeholder="Enter your email" required>
-                </div>
-                <button type="submit" id="submitBtn">
-                    <span id="btnText">Send Verification Code</span>
-                </button>
-            </form>
-        </div>
-
-        <!-- New Password Section -->
-        <div class="new-password-section" id="newPasswordSection">
-            <h2>Enter New Password</h2>
-            <p class="subtitle">We've sent a verification code to your email. Enter the code and your new password.</p>
-            
-            <div class="message" id="message2"></div>
-            
-            <form class="forgot-form" id="resetForm" onsubmit="resetPassword(event)">
-                <div class="input-group">
-                    <label for="verificationCode">Verification Code</label>
-                    <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" required>
-                </div>
-                <div class="input-group">
-                    <label for="newPassword">New Password</label>
-                    <input type="password" id="newPassword" placeholder="Enter new password" required minlength="6">
-                </div>
-                <div class="input-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" placeholder="Confirm new password" required minlength="6">
-                </div>
-                <button type="submit" id="resetBtn">
-                    <span id="resetBtnText">Reset Password</span>
-                </button>
-            </form>
+        <!-- Coming Soon Section -->
+        <div class="coming-soon-section">
+            <div class="icon-container">
+                <i class='bx bx-time-five'></i>
+            </div>
+            <h2>Coming Soon</h2>
+            <p class="subtitle">We're working hard to bring you the password reset feature. This page will be available in a future update.</p>
+            <p class="note">In the meantime, please contact support if you need assistance.</p>
         </div>
 
         <div class="back-link">
@@ -252,169 +218,63 @@
         </div>
     </div>
 
-    <script>
-        // Store verification code and email
-        let storedCode = '';
-        let userEmail = '';
-
-        // Function to generate a 6-digit verification code
-        function generateCode() {
-            return Math.floor(100000 + Math.random() * 900000).toString();
+    <style>
+        /* Coming Soon Specific Styles */
+        .coming-soon-section {
+            padding: 1rem 0;
         }
-
-        // Function to show message
-        function showMessage(elementId, text, type) {
-            const element = document.getElementById(elementId);
-            element.textContent = text;
-            element.className = 'message ' + type;
+        
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #333333, #666666);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
         }
-
-        // Function to hide message
-        function hideMessage(elementId) {
-            const element = document.getElementById(elementId);
-            element.className = 'message';
-            element.style.display = 'none';
+        
+        .icon-container i {
+            font-size: 2.5rem;
+            color: #ffffff;
         }
-
-        // Send verification code
-        function sendVerification(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('email').value.trim();
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            
-            // Check if user exists
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-            
-            if (!user) {
-                showMessage('message', 'This email is not registered. Please check your email or create a new account.', 'error');
-                return;
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(51, 51, 51, 0.4);
             }
-            
-            // Show loading
-            submitBtn.disabled = true;
-            btnText.innerHTML = '<span class="spinner"></span>Sending...';
-            
-            // Simulate sending email (in real app, this would call a backend API)
-            setTimeout(() => {
-                // Generate verification code
-                storedCode = generateCode();
-                userEmail = email;
-                
-                // Store code with timestamp (valid for 10 minutes)
-                localStorage.setItem('verificationCode', JSON.stringify({
-                    code: storedCode,
-                    email: email,
-                    timestamp: Date.now(),
-                    expiresIn: 10 * 60 * 1000 // 10 minutes
-                }));
-                
-                // Show success message (in real app, code would be sent via email)
-                showMessage('message', 'Verification code sent! (For demo: your code is ' + storedCode + ')', 'success');
-                
-                // Switch to new password section after delay
-                setTimeout(() => {
-                    document.getElementById('verificationSection').classList.add('hidden');
-                    document.getElementById('newPasswordSection').classList.add('active');
-                }, 1500);
-                
-                submitBtn.disabled = false;
-                btnText.textContent = 'Send Verification Code';
-            }, 1500);
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px 10px rgba(51, 51, 51, 0);
+            }
         }
-
-        // Reset password
-        function resetPassword(event) {
-            event.preventDefault();
-            
-            const code = document.getElementById('verificationCode').value.trim();
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const resetBtn = document.getElementById('resetBtn');
-            const resetBtnText = document.getElementById('resetBtnText');
-            
-            // Get stored verification data
-            const storedData = JSON.parse(localStorage.getItem('verificationCode'));
-            
-            if (!storedData) {
-                showMessage('message2', 'Verification session expired. Please request a new code.', 'error');
-                return;
-            }
-            
-            // Check if code is expired
-            if (Date.now() - storedData.timestamp > storedData.expiresIn) {
-                showMessage('message2', 'Verification code has expired. Please request a new one.', 'error');
-                localStorage.removeItem('verificationCode');
-                return;
-            }
-            
-            // Verify code
-            if (code !== storedData.code) {
-                showMessage('message2', 'Invalid verification code. Please try again.', 'error');
-                return;
-            }
-            
-            // Check if passwords match
-            if (newPassword !== confirmPassword) {
-                showMessage('message2', 'Passwords do not match. Please try again.', 'error');
-                return;
-            }
-            
-            // Check password length
-            if (newPassword.length < 6) {
-                showMessage('message2', 'Password must be at least 6 characters long.', 'error');
-                return;
-            }
-            
-            // Show loading
-            resetBtn.disabled = true;
-            resetBtnText.innerHTML = '<span class="spinner"></span>Resetting...';
-            
-            // Update password in localStorage
-            setTimeout(() => {
-                const users = JSON.parse(localStorage.getItem('users')) || [];
-                const userIndex = users.findIndex(u => u.email.toLowerCase() === storedData.email.toLowerCase());
-                
-                if (userIndex !== -1) {
-                    users[userIndex].password = newPassword;
-                    localStorage.setItem('users', JSON.stringify(users));
-                    
-                    // Clear verification data
-                    localStorage.removeItem('verificationCode');
-                    
-                    showMessage('message2', 'Password reset successfully! Redirecting to login...', 'success');
-                    
-                    // Redirect to login after delay
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
-                } else {
-                    showMessage('message2', 'User not found. Please try again.', 'error');
-                    resetBtn.disabled = false;
-                    resetBtnText.textContent = 'Reset Password';
-                }
-            }, 1500);
+        
+        .forgot-container h2 {
+            color: #1a1a1a;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
         }
-
-        // Check if there's an existing verification session
-        window.onload = function() {
-            const storedData = JSON.parse(localStorage.getItem('verificationCode'));
-            
-            if (storedData) {
-                // Check if code is still valid
-                if (Date.now() - storedData.timestamp < storedData.expiresIn) {
-                    userEmail = storedData.email;
-                    document.getElementById('verificationSection').classList.add('hidden');
-                    document.getElementById('newPasswordSection').classList.add('active');
-                    showMessage('message2', 'Enter the verification code sent to your email.', 'success');
-                } else {
-                    localStorage.removeItem('verificationCode');
-                }
-            }
-        };
-    </script>
+        
+        .forgot-container .subtitle {
+            color: #666666;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .forgot-container .note {
+            color: #888888;
+            font-size: 0.85rem;
+            font-style: italic;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-left: 3px solid #333333;
+        }
+    </style>
 </body>
 </html>
 
